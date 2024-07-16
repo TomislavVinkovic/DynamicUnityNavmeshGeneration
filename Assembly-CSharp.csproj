@@ -67,6 +67,7 @@
     <Compile Include="Assets/Scripts/Enums/DynamicNavMeshState.cs" />
     <Compile Include="Assets/Scripts/Math/LinearAlgebra.cs" />
     <Compile Include="Assets/Scripts/DynamicNavMeshController.cs" />
+    <Compile Include="Assets/Scripts/AgentGroup.cs" />
     <Compile Include="Assets/Scripts/AgentMovement.cs" />
     <Compile Include="Assets/Scripts/GlobalNavMeshController.cs" />
   </ItemGroup>

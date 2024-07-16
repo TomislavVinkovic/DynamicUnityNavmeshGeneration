@@ -64,10 +64,6 @@ public class AgentMovement : MonoBehaviour
         var index = UnityEngine.Random.Range(0, waypoints.Length - 1);
         return waypoints[index];
     }
-    Vector3 GetNextPosition() {
-        // TODO: Implement some more interesting movement
-        return transform.position + new Vector3(-1, 0, 1);
-    }
 
     // Start is called before the first frame update
     void Start()

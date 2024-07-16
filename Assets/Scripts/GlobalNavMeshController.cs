@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
+using System;
 
 public class GlobalNavMeshController : MonoBehaviour
 {
@@ -14,18 +15,26 @@ public class GlobalNavMeshController : MonoBehaviour
     Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(20f, 5f, 20f);
     float UPDATE_DELAY = .1f;
     float NAVMESH_SURFACE_MERGE_DISTANCE = 10f;
+    string AGENT_TAG = "Agent";
 
     void Start() 
     {
         // Find all agents and save them into the array
-        agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
+        agents = GetAllAgents();
 
         // sort agents such that the agents in the bottom left corner are first
         agents.Sort(SortByDistanceToBottomLeftCorner);
         
-        List<Vector3> groupCenters = GetAgentGroupCenters();
-        foreach (var center in groupCenters) {
-            GameObject navMeshSurface = InstantiateDynamicNavMeshSurface(center);
+        List<AgentGroup> agentGroups = GetAgentGroups(agents);
+        foreach (var group in agentGroups) {
+            GameObject navMeshSurface = InstantiateDynamicNavMeshSurface(group.Center);
+            var surfaceController = navMeshSurface.GetComponent<DynamicNavMeshController>();
+            surfaceController.SetNavMeshBounds(
+                new Bounds(
+                    group.Center,
+                    Vector3.Scale(AGENT_NAVMESH_BOUNDS_SIZE, new Vector3(group.AgentCount, 1f, group.AgentCount))
+                )
+            );
             navMeshSurfaces.Add(navMeshSurface.GetComponent<DynamicNavMeshController>());
         }
 
@@ -79,7 +88,7 @@ public class GlobalNavMeshController : MonoBehaviour
                     
                 else if(surfaceController.state == DynamicNavMeshState.Updating)
                 {
-                    surfaceController.UpdateNavMesh();
+                    UpdateNavMesh(surfaceController);
                 }
                 else if(surfaceController.state == DynamicNavMeshState.Destroying)
                 {
@@ -135,17 +144,13 @@ public class GlobalNavMeshController : MonoBehaviour
         // group navmesh surfaces that are near each other on the xz plane
         // i am only interested in groups that have more than one element
         var navMeshGroups = GroupNavMeshes(navMeshSurfacesCopy).Where(group => group.Count > 1);
-
         foreach (var group in navMeshGroups) {
+            int agentsInsideCount = group.Sum(navMeshSurface => navMeshSurface.AgentsInside.Count);
             int groupSurfacesCount = group.Count;
             // get the mean of the group
             var groupCenter = LinearAlgebra.GetMeanInSpace(
                 group.ConvertAll(navMeshSurface => navMeshSurface.transform.position)
             );
-            // find the navmesh in the group with the largest bounds
-            var largestBounds = group.OrderByDescending(
-                navMeshSurface => navMeshSurface.NavMeshBounds.size.sqrMagnitude
-            ).First().NavMeshBounds.size;
 
             // instantiate a new navmesh surface in the mean of the group
             GameObject newNavMeshSurface = InstantiateDynamicNavMeshSurface(groupCenter);
@@ -156,7 +161,7 @@ public class GlobalNavMeshController : MonoBehaviour
             controller.SetNavMeshBounds(
                 new Bounds(
                     groupCenter,
-                    Vector3.Scale(largestBounds, new Vector3(groupSurfacesCount, 1f, groupSurfacesCount))
+                    Vector3.Scale(AGENT_NAVMESH_BOUNDS_SIZE, new Vector3(agentsInsideCount, 1f, agentsInsideCount))
                 )
             );
 
@@ -204,29 +209,89 @@ public class GlobalNavMeshController : MonoBehaviour
         return groups;
     }
 
-    List<Vector3> GetAgentGroupCenters() {
-        List<GameObject> currentGroup = new List<GameObject>();
-        List<Vector3> groupCenters = new List<Vector3>();
-
-        Vector3 currentGroupCenter = agents[0].transform.position;
+    /*
+        Works simmiliarly as the k-means algorithm
+        However, the groups are already sorted so the time complexity is greatly reduced
+    */
+    List<AgentGroup> GetAgentGroups(List<GameObject> agents) {
+        List<AgentGroup> agentGroups = new List<AgentGroup>();
+        AgentGroup currentGroup = new AgentGroup();
 
         // we can do it like this because the agents are sorted
         foreach (var agent in agents) {
-            var groupCenterBounds = new Bounds(currentGroupCenter, AGENT_NAVMESH_BOUNDS_SIZE);
-            if(!groupCenterBounds.Contains(agent.transform.position)) {
-                groupCenters.Add(currentGroupCenter);
-                currentGroup = new List<GameObject>();
-                currentGroupCenter = agent.transform.position;
+            // case for the first element
+            if(currentGroup.AgentCount == 0) {
+                currentGroup.AddAgent(agent);
+                currentGroup.Center = agent.transform.position;
+                continue;
             }
-            currentGroup.Add(agent);
-            currentGroupCenter = LinearAlgebra.GetMeanInSpace(
-                currentGroup.ConvertAll(agent => agent.transform.position)
+
+            // scale the bounds by number of agents in the group
+            var agentsInGroup = currentGroup.AgentCount;
+
+            var boundsSize = Vector3.Scale(AGENT_NAVMESH_BOUNDS_SIZE, new Vector3(agentsInGroup, 1f, agentsInGroup));
+            var smallerBoundsSize = Vector3.Scale(boundsSize, new Vector3(0.7f, 1f, 0.7f));
+
+            var groupCenterBounds = new Bounds(currentGroup.Center, boundsSize);
+            var groupCenterSmallerBounds = new Bounds(currentGroup.Center, smallerBoundsSize);
+
+
+            if(!groupCenterSmallerBounds.Contains(agent.transform.position)) {
+                agentGroups.Add(currentGroup);
+                currentGroup = new AgentGroup();
+            }
+            currentGroup.AddAgent(agent);
+            currentGroup.Center = LinearAlgebra.GetMeanInSpace(
+                currentGroup.Agents.ConvertAll(agent => agent.transform.position)
             );
+
+            
         }
-        if(currentGroupCenter != groupCenters[groupCenters.Count - 1]) {
-            groupCenters.Add(currentGroupCenter);
+        if( (agentGroups.Count == 0 && currentGroup.AgentCount > 0) || currentGroup.Id != agentGroups[agentGroups.Count - 1].Id ) {
+            agentGroups.Add(currentGroup);
         }
 
-        return groupCenters;
+        return agentGroups;
+    }
+
+    void UpdateNavMesh(DynamicNavMeshController oldMeshSurface) {
+        // get all agents inside and sort them by distance to the bottom left corner
+        oldMeshSurface.AgentsInside.ForEach(agent => agent.SetActive(false));
+        var agentsInside = oldMeshSurface.AgentsInside;
+        agentsInside.Sort(SortByDistanceToBottomLeftCorner);
+
+        // get the agent groups
+        List<AgentGroup> agentGroups = GetAgentGroups(agentsInside);
+
+        foreach (var group in agentGroups) {
+            GameObject navMeshSurface = InstantiateDynamicNavMeshSurface(group.Center);
+            var surfaceController = navMeshSurface.GetComponent<DynamicNavMeshController>();
+            surfaceController.SetNavMeshBounds(
+                new Bounds(
+                    group.Center,
+                    Vector3.Scale(AGENT_NAVMESH_BOUNDS_SIZE, new Vector3(group.AgentCount, 1f, group.AgentCount))
+                )
+            );
+            navMeshSurfaces.Add(navMeshSurface.GetComponent<DynamicNavMeshController>());
+        }
+        oldMeshSurface.state = DynamicNavMeshState.Destroy;
+    }
+
+    private List<GameObject> GetAllAgents() {
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[];
+
+        // Create a list to store all GameObjects with the specified tag
+        List<GameObject> agents = new List<GameObject>();
+
+        // Iterate through allObjects and add those with the specified tag to the agents list
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.CompareTag(AGENT_TAG))
+            {
+                agents.Add(obj);
+            }
+        }
+
+        return agents;
     }
 }
