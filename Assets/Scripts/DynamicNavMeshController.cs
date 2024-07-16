@@ -11,10 +11,15 @@ public class DynamicNavMeshController : MonoBehaviour
     public NavMeshSurface navMeshSurface;
     List<GameObject> agents;
     List<GameObject> agentsInside;
-    public Bounds navMeshBounds;
-    public Bounds smallerBounds;
+    Bounds navMeshBounds;
+    Bounds smallerBounds;
+    
+    // PUBLIC GETTERS
+    public Bounds NavMeshBounds { get => navMeshBounds; }
+    public Bounds SmallerBounds { get => smallerBounds; }
+    public List<GameObject> AgentsInside { get => agentsInside; }
 
-    void Start() 
+    void Awake() 
     {
         id = GUID.Generate();
         state = DynamicNavMeshState.Create;
@@ -25,11 +30,25 @@ public class DynamicNavMeshController : MonoBehaviour
             navMeshSurface.navMeshData = new NavMeshData();
             NavMesh.AddNavMeshData(navMeshSurface.navMeshData);
         }
-        navMeshBounds = new Bounds(transform.position, new Vector3(20f, 5f, 20f));
-        smallerBounds = new Bounds(transform.position, new Vector3(14f, 5f, 14f)); // 70% of the area
 
+        // Initialize a default bounds if needed
+        InitializeBounds();
+    }
+
+    void Start() 
+    {
         agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
         agentsInside = new List<GameObject>();
+    }
+
+    void InitializeBounds() {
+        navMeshBounds = new Bounds(transform.position, new Vector3(20f, 5f, 20f));
+        smallerBounds = new Bounds(navMeshBounds.center, Vector3.Scale(navMeshBounds.size, new Vector3(0.7f, 1f, 0.7f)));
+    }
+
+    public void SetNavMeshBounds(Bounds bounds) {
+        navMeshBounds = bounds;
+        smallerBounds = new Bounds(bounds.center, Vector3.Scale(bounds.size, new Vector3(0.7f, 1f, 0.7f)));
     }
 
     void UpdateBounds() {
@@ -83,9 +102,14 @@ public class DynamicNavMeshController : MonoBehaviour
     }
 
     public void BuildNavMesh() {
+        
         navMeshSurface.collectObjects = CollectObjects.Volume;
         navMeshSurface.center = Vector3.zero;
-        navMeshSurface.size = new Vector3(20f, 0f, 20f);
+        navMeshSurface.size = new Vector3(
+            navMeshBounds.size.x,
+            0,
+            navMeshBounds.size.z
+        );
 
         navMeshSurface.BuildNavMesh();
         state = DynamicNavMeshState.Ready;
@@ -109,9 +133,14 @@ public class DynamicNavMeshController : MonoBehaviour
         NavMeshHit hit;
         if (NavMesh.SamplePosition(agent.transform.position, out hit, 1.0f, NavMesh.AllAreas))
         {
+            if(!agent.GetComponent<NavMeshAgent>()) {
+                agent.AddComponent<NavMeshAgent>();
+            }
             agent.transform.position = hit.position;
-            var navMeshAgent = agent.AddComponent<NavMeshAgent>();
+            var navMeshAgent = agent.GetComponent<NavMeshAgent>();
             navMeshAgent.stoppingDistance = 0.1f;
+            
+            agent.SetActive(true);
         } 
     }
 }
