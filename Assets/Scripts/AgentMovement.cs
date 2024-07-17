@@ -71,7 +71,6 @@ public class AgentMovement : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(!navMeshAgent) {

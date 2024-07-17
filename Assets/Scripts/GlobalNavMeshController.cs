@@ -2,8 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.AI.Navigation;
-using System;
 
 public class GlobalNavMeshController : MonoBehaviour
 {
@@ -12,7 +10,7 @@ public class GlobalNavMeshController : MonoBehaviour
     List<DynamicNavMeshController> navMeshSurfaces = new List<DynamicNavMeshController>();
     Queue<DynamicNavMeshController> updateQueue = new Queue<DynamicNavMeshController>();
 
-    Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(20f, 5f, 20f);
+    Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(10f, 5f, 10f);
     float UPDATE_DELAY = .1f;
     float NAVMESH_SURFACE_MERGE_DISTANCE = 10f;
     string AGENT_TAG = "Agent";
@@ -228,8 +226,9 @@ public class GlobalNavMeshController : MonoBehaviour
 
             // scale the bounds by number of agents in the group
             var agentsInGroup = currentGroup.AgentCount;
-
-            var boundsSize = Vector3.Scale(AGENT_NAVMESH_BOUNDS_SIZE, new Vector3(agentsInGroup, 1f, agentsInGroup));
+            
+            // +1 because i am checking if the agent is inside the bounds of the superficial new group
+            var boundsSize = Vector3.Scale(AGENT_NAVMESH_BOUNDS_SIZE, new Vector3(agentsInGroup + 1, 1f, agentsInGroup + 1));
             var smallerBoundsSize = Vector3.Scale(boundsSize, new Vector3(0.7f, 1f, 0.7f));
 
             var groupCenterBounds = new Bounds(currentGroup.Center, boundsSize);
@@ -256,14 +255,23 @@ public class GlobalNavMeshController : MonoBehaviour
 
     void UpdateNavMesh(DynamicNavMeshController oldMeshSurface) {
         // get all agents inside and sort them by distance to the bottom left corner
-        oldMeshSurface.AgentsInside.ForEach(agent => agent.SetActive(false));
         var agentsInside = oldMeshSurface.AgentsInside;
         agentsInside.Sort(SortByDistanceToBottomLeftCorner);
 
+        oldMeshSurface.AgentsInside.ForEach(agent => agent.SetActive(false));
+
         // get the agent groups
+        // if there
         List<AgentGroup> agentGroups = GetAgentGroups(agentsInside);
 
-        foreach (var group in agentGroups) {
+        // If you can get by without destroying the old mesh, do it
+        if(agentGroups.Count == 1) {
+            oldMeshSurface.UpdateNavMeshStatic();
+        }
+        
+        // otherwise, destroy the old mesh and create new ones
+        else {
+            foreach (var group in agentGroups) {
             GameObject navMeshSurface = InstantiateDynamicNavMeshSurface(group.Center);
             var surfaceController = navMeshSurface.GetComponent<DynamicNavMeshController>();
             surfaceController.SetNavMeshBounds(
@@ -273,8 +281,10 @@ public class GlobalNavMeshController : MonoBehaviour
                 )
             );
             navMeshSurfaces.Add(navMeshSurface.GetComponent<DynamicNavMeshController>());
+            }
+            oldMeshSurface.state = DynamicNavMeshState.Destroy;
         }
-        oldMeshSurface.state = DynamicNavMeshState.Destroy;
+        
     }
 
     private List<GameObject> GetAllAgents() {

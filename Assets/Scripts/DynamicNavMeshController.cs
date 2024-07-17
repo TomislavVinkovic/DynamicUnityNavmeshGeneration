@@ -47,6 +47,11 @@ public class DynamicNavMeshController : MonoBehaviour
         navMeshBounds = new Bounds(transform.position, new Vector3(20f, 5f, 20f));
         smallerBounds = new Bounds(navMeshBounds.center, Vector3.Scale(navMeshBounds.size, new Vector3(0.7f, 1f, 0.7f)));
     }
+    void UpdateBounds() {
+        navMeshBounds.center = transform.position;
+        smallerBounds.center = transform.position;
+    }
+
 
     public void SetNavMeshBounds(Bounds bounds) {
         navMeshBounds = bounds;
@@ -98,6 +103,30 @@ public class DynamicNavMeshController : MonoBehaviour
         }
 
         agentsInside.ForEach(agent => ReactivateAgentIfOnNavMesh(agent));
+    }
+
+    public void UpdateNavMeshStatic() {
+        agentsInside.ForEach(agent => agent.SetActive(false));
+
+        var meanPosition = LinearAlgebra.GetMeanInSpace(
+            agentsInside.ConvertAll(agent => agent.transform.position)
+        );
+        transform.position = new Vector3(meanPosition.x, 0, meanPosition.z);
+        UpdateBounds();
+
+        state = DynamicNavMeshState.Ready;
+
+        foreach (var agent in agents) {
+            var center = new Vector3(
+                transform.position.x,
+                0,
+                transform.position.z
+            );
+            if(navMeshBounds.Contains(agent.transform.position - Vector3.up)) {
+                agentsInside.Add(agent);
+            }
+        }
+        agentsInside.ForEach(agent => agent.SetActive(true));
     }
 
     private void ReactivateAgentIfOnNavMesh(GameObject agent)
