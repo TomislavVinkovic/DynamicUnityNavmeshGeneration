@@ -1,12 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.AI.Navigation;
 using UnityEngine;
 
 public class NavMeshBuilder : MonoBehaviour
 {
-    float BOUNDING_BOX_PADDING_X = 20f;
-    float BOUNDING_BOX_PADDING_Z = 20f;
+    float BOUNDING_BOX_PADDING_X = 10f;
+    float BOUNDING_BOX_PADDING_Z = 10f;
     public GameObject dynamicNavMeshPrefab;
 
     public Dictionary<(int, int), DynamicNavMeshController> BuildNavMeshesFromAgentClusters(

@@ -6,7 +6,7 @@ using UnityEngine;
 public static class AgentClustering
 {
 
-    static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(20f, 5f, 20f);
+    static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(30f, 5f, 30f);
 
 
     public static Dictionary<(int, int), List<GameObject>> ClusterAgents () {
@@ -108,7 +108,6 @@ public static class AgentClustering
             }
             combinedClusters[combinedKey].Add(agent);
         }
-
         return combinedClusters;
     }
 }

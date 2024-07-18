@@ -31,30 +31,17 @@ public class DynamicNavMeshController : MonoBehaviour
             navMeshSurface.navMeshData = new NavMeshData();
             NavMesh.AddNavMeshData(navMeshSurface.navMeshData);
         }
-
-        // Initialize a default bounds if needed
-        InitializeBounds();
     }
 
     void Start() 
     {
-        agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
+        agents = World.GetAllAgents();
         agentsInside = new List<GameObject>();
-    }
-
-    void InitializeBounds() {
-        navMeshBounds = new Bounds(transform.position, new Vector3(20f, 5f, 20f));
-        smallerBounds = new Bounds(navMeshBounds.center, Vector3.Scale(navMeshBounds.size, new Vector3(0.7f, 1f, 0.7f)));
     }
 
     public void SetNavMeshBounds(Bounds bounds) {
         navMeshBounds = bounds;
-        smallerBounds = new Bounds(bounds.center, Vector3.Scale(bounds.size, new Vector3(0.7f, 1f, 0.7f)));
-    }
-
-    void UpdateBounds() {
-        navMeshBounds.center = transform.position;
-        smallerBounds.center = transform.position;
+        smallerBounds = new Bounds(bounds.center, bounds.size - new Vector3(10f, 0f, 10f));
     }
 
     void Update() 
@@ -116,7 +103,7 @@ public class DynamicNavMeshController : MonoBehaviour
             var navMeshAgent = agent.GetComponent<NavMeshAgent>();
             navMeshAgent.stoppingDistance = 0.1f;
             
-            agent.SetActive(true);
+            navMeshAgent.isStopped = false;
         } 
     }
 }

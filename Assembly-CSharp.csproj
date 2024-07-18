@@ -70,6 +70,7 @@
     <Compile Include="Assets/Scripts/Mesh/NavMeshBuilder.cs" />
     <Compile Include="Assets/Scripts/AgentMovement.cs" />
     <Compile Include="Assets/Scripts/Math/AgentClustering.cs" />
+    <Compile Include="Assets/Scripts/World/World.cs" />
     <Compile Include="Assets/Scripts/GlobalNavMeshController.cs" />
   </ItemGroup>
   <ItemGroup>

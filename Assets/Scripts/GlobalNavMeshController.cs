@@ -2,27 +2,36 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.AI;
 
 public class GlobalNavMeshController : MonoBehaviour
-{
-    public NavMeshBuilder navMeshBuilder;
+{   
+    public GameObject navMeshBuilderObject;
+    NavMeshBuilder navMeshBuilder;
 
     List<GameObject> agents = new List<GameObject>();
     Dictionary<(int, int), DynamicNavMeshController> navMeshSurfaces = new Dictionary<(int, int), DynamicNavMeshController>();
     Queue<DynamicNavMeshController> updateQueue = new Queue<DynamicNavMeshController>();
 
-    float UPDATE_DELAY = 1f;
+    float UPDATE_DELAY = .1f;
     
     bool shouldUpdate = false;
     public bool ShouldUpdate { get => shouldUpdate; }
     public void MarkForUpdate() {
         shouldUpdate = true;
     }
+    public void FinishUpdate() {
+        shouldUpdate = false;
+    }
+
+    void Awake() {
+        navMeshBuilder = navMeshBuilderObject.GetComponent<NavMeshBuilder>();
+    }
 
     void Start() 
     {
         // Find all agents and save them into the array
-        agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
+        agents = World.GetAllAgents();
         
         // mark for first update
         MarkForUpdate();
@@ -69,7 +78,8 @@ public class GlobalNavMeshController : MonoBehaviour
 
         // deactivate all agents
         foreach(var agent in agents) {
-            agent.SetActive(false);
+            var navMeshAgent = agent.GetComponent<NavMeshAgent>();
+            navMeshAgent.isStopped = true;
         }
 
         // mark all surfaces for destruction
@@ -85,5 +95,7 @@ public class GlobalNavMeshController : MonoBehaviour
             surfaceController.GlobalNavMeshController = this;
             updateQueue.Enqueue(surfaceController);
         }
+
+        FinishUpdate();
     }
 }
