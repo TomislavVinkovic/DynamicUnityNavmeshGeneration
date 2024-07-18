@@ -31,7 +31,7 @@ public class GlobalNavMeshController : MonoBehaviour
     void Start() 
     {
         // Find all agents and save them into the array
-        agents = World.GetAllAgents();
+        agents = World.GetActiveAgents();
         
         // mark for first update
         MarkForUpdate();

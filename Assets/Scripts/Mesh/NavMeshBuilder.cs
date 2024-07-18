@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class NavMeshBuilder : MonoBehaviour
 {
-    float BOUNDING_BOX_PADDING_X = 10f;
-    float BOUNDING_BOX_PADDING_Z = 10f;
+    float BOUNDING_BOX_PADDING_X = 20f;
+    float BOUNDING_BOX_PADDING_Z = 20f;
     public GameObject dynamicNavMeshPrefab;
 
     public Dictionary<(int, int), DynamicNavMeshController> BuildNavMeshesFromAgentClusters(
@@ -43,7 +43,7 @@ public class NavMeshBuilder : MonoBehaviour
     }
 
     BoundingBoxXZ GetBoundingBox(List<GameObject> agentCluster) {
-        
+        // case for 1 agent
         BoundingBoxXZ boundingBox = new BoundingBoxXZ();
 
         foreach(var agent in agentCluster) {
@@ -52,8 +52,6 @@ public class NavMeshBuilder : MonoBehaviour
             boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
             boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
         }
-
-        // increase the bounding box size by some fixed padding
         boundingBox.minX -= BOUNDING_BOX_PADDING_X;
         boundingBox.maxX += BOUNDING_BOX_PADDING_X;
         boundingBox.minZ -= BOUNDING_BOX_PADDING_Z;

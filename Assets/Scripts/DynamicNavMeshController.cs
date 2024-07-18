@@ -35,7 +35,7 @@ public class DynamicNavMeshController : MonoBehaviour
 
     void Start() 
     {
-        agents = World.GetAllAgents();
+        agents = World.GetActiveAgents();
         agentsInside = new List<GameObject>();
     }
 
@@ -48,7 +48,7 @@ public class DynamicNavMeshController : MonoBehaviour
     {
         // only update if the navmeshsurface is not in the update process already
         if(State == DynamicNavMeshState.Ready) {
-            agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
+            agents = World.GetActiveAgents();
     
             foreach (var agent in agents) {
                 if(navMeshBounds.Contains(agent.transform.position)) {

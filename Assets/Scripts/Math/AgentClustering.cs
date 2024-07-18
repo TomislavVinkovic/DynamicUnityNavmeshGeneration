@@ -6,13 +6,10 @@ using UnityEngine;
 public static class AgentClustering
 {
 
-    static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(30f, 5f, 30f);
-
 
     public static Dictionary<(int, int), List<GameObject>> ClusterAgents () {
         // get all agents
-        var agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
-
+        var agents = World.GetActiveAgents();
         // sort agents by x axis
         var agentsX = agents.OrderBy(agent => agent.transform.position.x).ToList();
         // sort agents by z axis
@@ -41,12 +38,12 @@ public static class AgentClustering
 
             // check by x axis
             if(direction == LinearAlgebra.XAxis) {
-                if(Math.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x) < AGENT_NAVMESH_BOUNDS_SIZE.x) {
+                if(Math.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x) < World.AGENT_NAVMESH_BOUNDS_SIZE.x) {
                     isInCluster = true;
                 }
             }
             else if(direction == LinearAlgebra.ZAxis) {
-                if(Math.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z) < AGENT_NAVMESH_BOUNDS_SIZE.x) {
+                if(Math.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z) < World.AGENT_NAVMESH_BOUNDS_SIZE.x) {
                     isInCluster = true;
                 }
             }
