@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System;
+
+/*
+    * Class used for moving agents
+*/
 
 public class AgentMovement : MonoBehaviour
 {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Linear algebra constants and operations
 public static class LinearAlgebra {
 
     public static Vector3 XAxis { get => Vector3.right; }
@@ -24,6 +25,7 @@ public static class LinearAlgebra {
     }
 }
 
+// Bounding box with some useful properties
 public class BoundingBoxXZ {
     float AGENT_NAVMESH_BOUNDS_Y = 5f;
     public float minX;

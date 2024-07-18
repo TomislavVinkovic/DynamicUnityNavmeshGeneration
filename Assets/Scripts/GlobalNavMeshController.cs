@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine.AI;
+
+/*
+    * Class used for managing navmeshes and agents
+*/
 
 public class GlobalNavMeshController : MonoBehaviour
 {   

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    * Class used for storing world related constants
+*/
+
 public static class World
 {   
     public static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(40f, 0f, 40f);

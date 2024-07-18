@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+/*
+    * Class used for agent clustering operations
+*/
 public static class AgentClustering
 {
-
-
     public static Dictionary<(int, int), List<GameObject>> ClusterAgents () {
         // get all agents
         var agents = World.GetActiveAgents();

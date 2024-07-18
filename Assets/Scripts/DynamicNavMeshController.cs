@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEditor;
 
+/*
+    * Class used for building a single dynamic navmesh
+    * It is also used to check if any agents are so out of bounds so the navmesh needs to be rebuilt
+*/
 public class DynamicNavMeshController : MonoBehaviour
 {
     public GUID id;
@@ -19,6 +23,8 @@ public class DynamicNavMeshController : MonoBehaviour
     public Bounds NavMeshBounds { get => navMeshBounds; }
     public Bounds SmallerBounds { get => smallerBounds; }
     public List<GameObject> AgentsInside { get => agentsInside; }
+
+    Vector3 SMALLER_BOUNDS_DIFF = new Vector3(10f, 0f, 10f);
 
     void Awake() 
     {
@@ -41,7 +47,7 @@ public class DynamicNavMeshController : MonoBehaviour
 
     public void SetNavMeshBounds(Bounds bounds) {
         navMeshBounds = bounds;
-        smallerBounds = new Bounds(bounds.center, bounds.size - new Vector3(10f, 0f, 10f));
+        smallerBounds = new Bounds(bounds.center, bounds.size - SMALLER_BOUNDS_DIFF);
     }
 
     void Update() 

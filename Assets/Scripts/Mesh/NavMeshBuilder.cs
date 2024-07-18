@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+    * Class used for building navmeshes from agent clusters
+*/
 public class NavMeshBuilder : MonoBehaviour
 {
     float BOUNDING_BOX_PADDING_X = 20f;
