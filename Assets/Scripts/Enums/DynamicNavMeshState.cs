@@ -1,9 +1,7 @@
 public enum DynamicNavMeshState {
-    Create,
-    Update,
+    Build,
+    Building,
     Destroy,
-    Creating,
-    Updating,
     Destroying,
     Ready
 };

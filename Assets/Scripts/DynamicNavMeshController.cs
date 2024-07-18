@@ -7,8 +7,9 @@ using UnityEditor;
 public class DynamicNavMeshController : MonoBehaviour
 {
     public GUID id;
-    public DynamicNavMeshState state;
+    public DynamicNavMeshState State;
     public NavMeshSurface navMeshSurface;
+    public GlobalNavMeshController GlobalNavMeshController {get; set;}
     List<GameObject> agents;
     List<GameObject> agentsInside;
     Bounds navMeshBounds;
@@ -22,7 +23,7 @@ public class DynamicNavMeshController : MonoBehaviour
     void Awake() 
     {
         id = GUID.Generate();
-        state = DynamicNavMeshState.Create;
+        State = DynamicNavMeshState.Build;
         navMeshSurface = GetComponent<NavMeshSurface>();
 
         if (navMeshSurface.navMeshData == null)
@@ -59,7 +60,7 @@ public class DynamicNavMeshController : MonoBehaviour
     void Update() 
     {
         // only update if the navmeshsurface is not in the update process already
-        if(state == DynamicNavMeshState.Ready) {
+        if(State == DynamicNavMeshState.Ready) {
             agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
     
             foreach (var agent in agents) {
@@ -70,35 +71,10 @@ public class DynamicNavMeshController : MonoBehaviour
             foreach (var agent in agentsInside) {
                 if(!smallerBounds.Contains(agent.transform.position)) {
                     // mark for update
-                    state = DynamicNavMeshState.Update;
-                    return;
+                    GlobalNavMeshController.MarkForUpdate();
                 }
             }
         }
-    }
-
-    public void UpdateNavMesh() {
-        agentsInside.ForEach(agent => agent.SetActive(false));
-
-        var meanPosition = LinearAlgebra.GetMeanInSpace(
-            agentsInside.ConvertAll(agent => agent.transform.position)
-        );
-        transform.position = new Vector3(meanPosition.x, 0, meanPosition.z);
-        UpdateBounds();
-
-        state = DynamicNavMeshState.Ready;
-
-        foreach (var agent in agents) {
-            var center = new Vector3(
-                transform.position.x,
-                0,
-                transform.position.z
-            );
-            if(navMeshBounds.Contains(agent.transform.position - Vector3.up)) {
-                agentsInside.Add(agent);
-            }
-        }
-        agentsInside.ForEach(agent => agent.SetActive(true));
     }
 
     public void BuildNavMesh() {
@@ -112,7 +88,7 @@ public class DynamicNavMeshController : MonoBehaviour
         );
 
         navMeshSurface.BuildNavMesh();
-        state = DynamicNavMeshState.Ready;
+        State = DynamicNavMeshState.Ready;
 
         foreach (var agent in agents) {
             var center = new Vector3(

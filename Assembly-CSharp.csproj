@@ -67,8 +67,13 @@
     <Compile Include="Assets/Scripts/Enums/DynamicNavMeshState.cs" />
     <Compile Include="Assets/Scripts/Math/LinearAlgebra.cs" />
     <Compile Include="Assets/Scripts/DynamicNavMeshController.cs" />
+    <Compile Include="Assets/Scripts/Mesh/NavMeshBuilder.cs" />
     <Compile Include="Assets/Scripts/AgentMovement.cs" />
+    <Compile Include="Assets/Scripts/Math/AgentClustering.cs" />
     <Compile Include="Assets/Scripts/GlobalNavMeshController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets/Scripts/leftovers/oldCode.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
