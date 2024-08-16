@@ -16,8 +16,8 @@ public class GlobalNavMeshController : MonoBehaviour
     Dictionary<(int, int), DynamicNavMeshController> navMeshSurfaces = new Dictionary<(int, int), DynamicNavMeshController>();
     Queue<DynamicNavMeshController> updateQueue = new Queue<DynamicNavMeshController>();
 
-    private MeshFilter meshFilter; // Mesh filter for visualizing the navmesh
-    public Color navMeshColor = new Color(0, 1, 0, 0.5f); // Green with transparency
+    // private MeshFilter meshFilter; // Mesh filter for visualizing the navmesh
+    // public Color navMeshColor = new Color(0, 1, 0, 0.5f); // Green with transparency
 
     float UPDATE_DELAY = .1f;
     
@@ -32,9 +32,9 @@ public class GlobalNavMeshController : MonoBehaviour
 
     void Awake() {
         navMeshBuilder = navMeshBuilderObject.GetComponent<NavMeshBuilder>();
-        meshFilter = gameObject.AddComponent<MeshFilter>();
-        var meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshRenderer.material = CreateNavMeshMaterial();
+        // meshFilter = gameObject.AddComponent<MeshFilter>();
+        // var meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        // meshRenderer.material = CreateNavMeshMaterial();
 
     }
 
@@ -77,7 +77,7 @@ public class GlobalNavMeshController : MonoBehaviour
                     // GenerateNavMeshMesh();
                 }
             }
-            yield return new WaitForSeconds(UPDATE_DELAY);
+            yield return null;
         }
     }
 
@@ -111,39 +111,39 @@ public class GlobalNavMeshController : MonoBehaviour
         FinishUpdate();
     }
 
-    private void GenerateNavMeshMesh() {
-        NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
+    // private void GenerateNavMeshMesh() {
+    //     NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
 
-        // Create a new mesh
-        Mesh mesh = new Mesh();
+    //     // Create a new mesh
+    //     Mesh mesh = new Mesh();
 
-        // Get the vertices in world space and convert them to the local space of the NavMeshSurface
-        Vector3[] localVertices = new Vector3[triangulation.vertices.Length];
-        for (int i = 0; i < triangulation.vertices.Length; i++)
-        {
-            localVertices[i] = transform.InverseTransformPoint(triangulation.vertices[i]);
-        }
+    //     // Get the vertices in world space and convert them to the local space of the NavMeshSurface
+    //     Vector3[] localVertices = new Vector3[triangulation.vertices.Length];
+    //     for (int i = 0; i < triangulation.vertices.Length; i++)
+    //     {
+    //         localVertices[i] = transform.InverseTransformPoint(triangulation.vertices[i]);
+    //     }
 
-        // Assign the local vertices and triangles to the mesh
-        mesh.vertices = localVertices;
-        mesh.triangles = triangulation.indices;
-        mesh.RecalculateNormals();
+    //     // Assign the local vertices and triangles to the mesh
+    //     mesh.vertices = localVertices;
+    //     mesh.triangles = triangulation.indices;
+    //     mesh.RecalculateNormals();
 
-        meshFilter.mesh = mesh;
-    }
-    private Material CreateNavMeshMaterial()
-    {
-        Material mat = new Material(Shader.Find("Standard"));
-        mat.color = navMeshColor;
-        mat.SetFloat("_Mode", 3); // Make it transparent
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        mat.SetInt("_ZWrite", 0);
-        mat.DisableKeyword("_ALPHATEST_ON");
-        mat.EnableKeyword("_ALPHABLEND_ON");
-        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        mat.renderQueue = 3000;
+    //     meshFilter.mesh = mesh;
+    // }
+    // private Material CreateNavMeshMaterial()
+    // {
+    //     Material mat = new Material(Shader.Find("Standard"));
+    //     mat.color = navMeshColor;
+    //     mat.SetFloat("_Mode", 3); // Make it transparent
+    //     mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+    //     mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+    //     mat.SetInt("_ZWrite", 0);
+    //     mat.DisableKeyword("_ALPHATEST_ON");
+    //     mat.EnableKeyword("_ALPHABLEND_ON");
+    //     mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+    //     mat.renderQueue = 3000;
 
-        return mat;
-    }
+    //     return mat;
+    // }
 }
