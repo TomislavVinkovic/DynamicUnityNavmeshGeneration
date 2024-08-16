@@ -51,7 +51,12 @@ public class DynamicNavMeshController : MonoBehaviour
         if(State == DynamicNavMeshState.Ready) {
             agents = World.GetActiveAgents();
             foreach (var agent in agentsInside) {
-                if(!navMeshBounds.Contains(agent.transform.position)) {
+                if(
+                    !navMeshBounds.Contains(agent.transform.position + new Vector3(1f, 0, 0))
+                    || !navMeshBounds.Contains(agent.transform.position - new Vector3(1f, 0, 0))
+                    || !navMeshBounds.Contains(agent.transform.position + new Vector3(0, 0, 1f))
+                    || !navMeshBounds.Contains(agent.transform.position - new Vector3(0, 0, 1f))
+                ) {
                     // mark for update
                     GlobalNavMeshController.MarkForUpdate();
                 }

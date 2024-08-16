@@ -31,18 +31,31 @@ public static class AgentClustering
     }
 
     static Dictionary<(int, int), List<GameObject>> MergeNearbyClusters(Dictionary<(int, int), List<GameObject>> clusters) {
-        // Iterate through clusters and check if any should be merged
+        var clustersToRemove = new HashSet<(int, int)>();
+        var mergedClusters = new Dictionary<(int, int), List<GameObject>>(clusters);
+
         foreach (var cluster1 in clusters) {
+            if (clustersToRemove.Contains(cluster1.Key)) continue;
+
             foreach (var cluster2 in clusters) {
-                if (cluster1.Key != cluster2.Key && ShouldMergeClusters(cluster1.Value, cluster2.Value)) {
+                if (cluster1.Key == cluster2.Key || clustersToRemove.Contains(cluster2.Key)) continue;
+
+                if (ShouldMergeClusters(cluster1.Value, cluster2.Value)) {
                     // Merge cluster2 into cluster1
-                    cluster1.Value.AddRange(cluster2.Value);
-                    clusters.Remove(cluster2.Key);
+                    mergedClusters[cluster1.Key].AddRange(cluster2.Value);
+                    clustersToRemove.Add(cluster2.Key);
                 }
             }
         }
-        return clusters;
+
+        // Remove merged clusters from the dictionary
+        foreach (var key in clustersToRemove) {
+            mergedClusters.Remove(key);
+        }
+
+        return mergedClusters;
     }
+
 
     static bool ShouldMergeClusters(List<GameObject> cluster1, List<GameObject> cluster2) {
         // Logic to determine if clusters should be merged, based on proximity or overlap
@@ -56,10 +69,10 @@ public static class AgentClustering
         BoundingBoxXZ boundingBox = new BoundingBoxXZ();
 
         foreach (var agent in agentCluster) {
-            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x);
-            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x);
-            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
-            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
+            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x) - 20f;
+            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x) + 20f;
+            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z) - 20f;
+            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z) + 20f;
         }
 
         return boundingBox;
