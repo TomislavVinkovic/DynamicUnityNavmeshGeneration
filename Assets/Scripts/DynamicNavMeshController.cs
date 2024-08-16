@@ -13,16 +13,16 @@ public class DynamicNavMeshController : MonoBehaviour
     public GUID id;
     public DynamicNavMeshState State;
     public NavMeshSurface navMeshSurface;
-    public GlobalNavMeshController GlobalNavMeshController {get; set;}
+    public GlobalNavMeshController GlobalNavMeshController { get; set; }
     List<GameObject> agents;
-    List<GameObject> agentsInside;
+    public List<GameObject> agentsInside;
     Bounds navMeshBounds;
-    
+
     // PUBLIC GETTERS
     public Bounds NavMeshBounds { get => navMeshBounds; }
     public List<GameObject> AgentsInside { get => agentsInside; }
 
-    void Awake() 
+    void Awake()
     {
         id = GUID.Generate();
         State = DynamicNavMeshState.Build;
@@ -35,37 +35,40 @@ public class DynamicNavMeshController : MonoBehaviour
         }
     }
 
-    void Start() 
+    void Start()
     {
         agents = World.GetActiveAgents();
         agentsInside = new List<GameObject>();
     }
 
-    public void SetNavMeshBounds(Bounds bounds) {
+    public void SetNavMeshBounds(Bounds bounds)
+    {
         navMeshBounds = bounds;
     }
 
-    void Update() 
+    void Update()
     {
-        // only update if the navmeshsurface is not in the update process already
-        if(State == DynamicNavMeshState.Ready) {
-            agents = World.GetActiveAgents();
-            foreach (var agent in agentsInside) {
-                if(
+        // Only update if the navmeshsurface is not in the update process already
+        if (State == DynamicNavMeshState.Ready)
+        {
+            foreach (var agent in agentsInside)
+            {
+                if (
                     !navMeshBounds.Contains(agent.transform.position + new Vector3(1f, 0, 0))
                     || !navMeshBounds.Contains(agent.transform.position - new Vector3(1f, 0, 0))
                     || !navMeshBounds.Contains(agent.transform.position + new Vector3(0, 0, 1f))
                     || !navMeshBounds.Contains(agent.transform.position - new Vector3(0, 0, 1f))
-                ) {
-                    // mark for update
+                )
+                {
+                    // Mark for update
                     GlobalNavMeshController.MarkForUpdate();
                 }
             }
         }
     }
 
-    public void BuildNavMesh() {
-        
+    public void BuildNavMesh()
+    {
         navMeshSurface.collectObjects = CollectObjects.Volume;
         navMeshSurface.center = Vector3.zero;
         navMeshSurface.size = new Vector3(
@@ -77,13 +80,15 @@ public class DynamicNavMeshController : MonoBehaviour
         navMeshSurface.BuildNavMesh();
         State = DynamicNavMeshState.Ready;
 
-        foreach (var agent in agents) {
+        foreach (var agent in agents)
+        {
             var center = new Vector3(
                 transform.position.x,
                 0,
                 transform.position.z
             );
-            if(navMeshBounds.Contains(agent.transform.position - Vector3.up)) {
+            if (navMeshBounds.Contains(agent.transform.position - Vector3.up))
+            {
                 agentsInside.Add(agent);
             }
         }
@@ -96,14 +101,15 @@ public class DynamicNavMeshController : MonoBehaviour
         NavMeshHit hit;
         if (NavMesh.SamplePosition(agent.transform.position, out hit, 1.0f, NavMesh.AllAreas))
         {
-            if(!agent.GetComponent<NavMeshAgent>()) {
+            if (!agent.GetComponent<NavMeshAgent>())
+            {
                 agent.AddComponent<NavMeshAgent>();
             }
             agent.transform.position = hit.position;
             var navMeshAgent = agent.GetComponent<NavMeshAgent>();
             navMeshAgent.stoppingDistance = 0.1f;
-            
+
             navMeshAgent.isStopped = false;
-        } 
+        }
     }
 }

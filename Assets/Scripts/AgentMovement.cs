@@ -87,10 +87,10 @@ public class AgentMovement : MonoBehaviour
         if(navMeshAgent) {
             if(!navMeshAgentSet) {
                 navMeshAgentSet = true;
-                navMeshAgent.SetDestination(GetRandomWaypoint());
+                navMeshAgent.SetDestination(new Vector3(50f, 0f, 120f));
             }
             else if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance) {
-                navMeshAgent.SetDestination(GetRandomWaypoint());
+                navMeshAgent.SetDestination(new Vector3(50f, 0f, 120f));
             }
         }
     }

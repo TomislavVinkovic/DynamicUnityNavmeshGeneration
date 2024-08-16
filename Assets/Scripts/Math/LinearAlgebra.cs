@@ -53,6 +53,19 @@ public class BoundingBoxXZ {
         get => new Vector3(Math.Abs(maxX - minX), AGENT_NAVMESH_BOUNDS_Y, Math.Abs(maxZ - minZ));
     }
 
+    public bool Intersects(BoundingBoxXZ other) {
+        // Check for overlap on the x-axis
+        bool xOverlap = this.minX <= other.maxX && this.maxX >= other.minX;
+
+        // Check for overlap on the z-axis
+        bool zOverlap = this.minZ <= other.maxZ && this.maxZ >= other.minZ;
+
+        // They intersect if they overlap on both axes
+        return xOverlap && zOverlap;
+    }
+
+
+
     public BoundingBoxXZ () {
         minX = 1e9f;
         maxX = -1e9f;
@@ -71,7 +84,7 @@ public class BoundingBoxXZ {
         this.maxZ = maxZ;
     }
 
-    public Bounds ToBounds() {
+    Bounds ToBounds() {
         return new Bounds(center, size);
     }
 }

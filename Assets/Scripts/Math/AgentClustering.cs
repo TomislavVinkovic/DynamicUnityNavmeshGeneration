@@ -26,34 +26,46 @@ public static class AgentClustering
 
         // Merge nearby clusters
         var mergedClusters = MergeNearbyClusters(combinedClusters);
-
         return mergedClusters;
     }
 
     static Dictionary<(int, int), List<GameObject>> MergeNearbyClusters(Dictionary<(int, int), List<GameObject>> clusters) {
-        var clustersToRemove = new HashSet<(int, int)>();
-        var mergedClusters = new Dictionary<(int, int), List<GameObject>>(clusters);
+        bool clustersMerged;
+        do {
+            clustersMerged = false;
+            var clustersToRemove = new HashSet<(int, int)>();
+            var mergedClusters = new Dictionary<(int, int), List<GameObject>>(clusters);
 
-        foreach (var cluster1 in clusters) {
-            if (clustersToRemove.Contains(cluster1.Key)) continue;
+            foreach (var cluster1 in clusters) {
+                if (clustersToRemove.Contains(cluster1.Key)) continue;
 
-            foreach (var cluster2 in clusters) {
-                if (cluster1.Key == cluster2.Key || clustersToRemove.Contains(cluster2.Key)) continue;
+                foreach (var cluster2 in clusters) {
+                    if (cluster1.Key == cluster2.Key || clustersToRemove.Contains(cluster2.Key)) continue;
 
-                if (ShouldMergeClusters(cluster1.Value, cluster2.Value)) {
-                    // Merge cluster2 into cluster1
-                    mergedClusters[cluster1.Key].AddRange(cluster2.Value);
-                    clustersToRemove.Add(cluster2.Key);
+                    if (ShouldMergeClusters(cluster1.Value, cluster2.Value)) {
+                        // Merge cluster2 into cluster1
+                        mergedClusters[cluster1.Key].AddRange(cluster2.Value);
+                        clustersToRemove.Add(cluster2.Key);
+                        clustersMerged = true;
+                        
+                        // Update the bounds for the merged cluster
+                        mergedClusters[cluster1.Key] = mergedClusters[cluster1.Key]; // Recalculate bounds here
+
+                        break; // Exit the inner loop to avoid modifying the collection while iterating
+                    }
                 }
             }
-        }
 
-        // Remove merged clusters from the dictionary
-        foreach (var key in clustersToRemove) {
-            mergedClusters.Remove(key);
-        }
+            // Remove merged clusters from the dictionary
+            foreach (var key in clustersToRemove) {
+                mergedClusters.Remove(key);
+            }
 
-        return mergedClusters;
+            clusters = mergedClusters;
+
+        } while (clustersMerged);
+
+        return clusters;
     }
 
 
@@ -62,18 +74,23 @@ public static class AgentClustering
         // For example, comparing bounding boxes:
         var bounds1 = GetBoundingBox(cluster1);
         var bounds2 = GetBoundingBox(cluster2);
-        return bounds1.ToBounds().Intersects(bounds2.ToBounds());
+        return bounds1.Intersects(bounds2);
     }
 
     static BoundingBoxXZ GetBoundingBox(List<GameObject> agentCluster) {
         BoundingBoxXZ boundingBox = new BoundingBoxXZ();
 
         foreach (var agent in agentCluster) {
-            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x) - 20f;
-            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x) + 20f;
-            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z) - 20f;
-            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z) + 20f;
+            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x);
+            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x);
+            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
+            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
         }
+
+        boundingBox.minX -= World.BOUNDING_BOX_PADDING_X;
+        boundingBox.maxX += World.BOUNDING_BOX_PADDING_X;
+        boundingBox.minZ -= World.BOUNDING_BOX_PADDING_Z;
+        boundingBox.maxZ += World.BOUNDING_BOX_PADDING_Z;
 
         return boundingBox;
     }
@@ -83,9 +100,6 @@ public static class AgentClustering
     static List<List<GameObject>> GroupAgents(List<GameObject> agents, Vector3 direction) {
         List<List<GameObject>> agentClusters = new List<List<GameObject>>();
         List<GameObject> currentCluster = new List<GameObject>();
-
-        // Define a tolerance threshold
-        float tolerance = 5.0f; // Adjust this based on your needs
 
         for (int i = 0; i < agents.Count; i++) {
             if (i == 0) {
@@ -98,12 +112,12 @@ public static class AgentClustering
             // Check by the specified axis
             if (direction == LinearAlgebra.XAxis) {
                 float distanceX = Mathf.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x);
-                if (distanceX < World.AGENT_NAVMESH_BOUNDS_SIZE.x + tolerance) {
+                if (distanceX < World.AGENT_NAVMESH_BOUNDS_SIZE.x) {
                     isInCluster = true;
                 }
             } else if (direction == LinearAlgebra.ZAxis) {
                 float distanceZ = Mathf.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z);
-                if (distanceZ < World.AGENT_NAVMESH_BOUNDS_SIZE.z + tolerance) {
+                if (distanceZ < World.AGENT_NAVMESH_BOUNDS_SIZE.z) {
                     isInCluster = true;
                 }
             }

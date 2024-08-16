@@ -6,8 +6,7 @@ using UnityEngine;
 */
 public class NavMeshBuilder : MonoBehaviour
 {
-    float BOUNDING_BOX_PADDING_X = 20f;
-    float BOUNDING_BOX_PADDING_Z = 20f;
+   
     public GameObject dynamicNavMeshPrefab;
 
     public Dictionary<(int, int), DynamicNavMeshController> BuildNavMeshesFromAgentClusters(
@@ -55,10 +54,10 @@ public class NavMeshBuilder : MonoBehaviour
             boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
             boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
         }
-        boundingBox.minX -= BOUNDING_BOX_PADDING_X;
-        boundingBox.maxX += BOUNDING_BOX_PADDING_X;
-        boundingBox.minZ -= BOUNDING_BOX_PADDING_Z;
-        boundingBox.maxZ += BOUNDING_BOX_PADDING_Z;
+        boundingBox.minX -= World.BOUNDING_BOX_PADDING_X;
+        boundingBox.maxX += World.BOUNDING_BOX_PADDING_X;
+        boundingBox.minZ -= World.BOUNDING_BOX_PADDING_Z;
+        boundingBox.maxZ += World.BOUNDING_BOX_PADDING_Z;
 
         return boundingBox;
     }
