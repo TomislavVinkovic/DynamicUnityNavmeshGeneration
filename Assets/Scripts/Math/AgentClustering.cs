@@ -9,27 +9,71 @@ using UnityEngine;
 */
 public static class AgentClustering
 {
-    public static Dictionary<(int, int), List<GameObject>> ClusterAgents () {
-        // get all agents
+    public static Dictionary<(int, int), List<GameObject>> ClusterAgents() {
+        // Get all agents
         var agents = World.GetActiveAgents();
-        // sort agents by x axis
+
+        // Sort and group agents by x-axis
         var agentsX = agents.OrderBy(agent => agent.transform.position.x).ToList();
-        // sort agents by z axis
+        var agentClustersX = GroupAgents(agentsX, LinearAlgebra.XAxis);
+
+        // Sort and group agents by z-axis
         var agentsZ = agents.OrderBy(agent => agent.transform.position.z).ToList();
+        var agentClustersZ = GroupAgents(agentsZ, LinearAlgebra.ZAxis);
 
-        // group agents by x axis
-        List<List<GameObject>> agentClustersX = GroupAgents(agentsX, LinearAlgebra.XAxis);
-        // group agents by z axis
-        List<List<GameObject>> agentClustersZ = GroupAgents(agentsZ, LinearAlgebra.ZAxis);
+        // Combine clusters based on x and z axes
+        var combinedClusters = CombineClusters(agentClustersX, agentClustersZ);
 
-        return CombineClusters(agentClustersX, agentClustersZ);
+        // Merge nearby clusters
+        var mergedClusters = MergeNearbyClusters(combinedClusters);
+
+        return mergedClusters;
     }
 
+    static Dictionary<(int, int), List<GameObject>> MergeNearbyClusters(Dictionary<(int, int), List<GameObject>> clusters) {
+        // Iterate through clusters and check if any should be merged
+        foreach (var cluster1 in clusters) {
+            foreach (var cluster2 in clusters) {
+                if (cluster1.Key != cluster2.Key && ShouldMergeClusters(cluster1.Value, cluster2.Value)) {
+                    // Merge cluster2 into cluster1
+                    cluster1.Value.AddRange(cluster2.Value);
+                    clusters.Remove(cluster2.Key);
+                }
+            }
+        }
+        return clusters;
+    }
+
+    static bool ShouldMergeClusters(List<GameObject> cluster1, List<GameObject> cluster2) {
+        // Logic to determine if clusters should be merged, based on proximity or overlap
+        // For example, comparing bounding boxes:
+        var bounds1 = GetBoundingBox(cluster1);
+        var bounds2 = GetBoundingBox(cluster2);
+        return bounds1.ToBounds().Intersects(bounds2.ToBounds());
+    }
+
+    static BoundingBoxXZ GetBoundingBox(List<GameObject> agentCluster) {
+        BoundingBoxXZ boundingBox = new BoundingBoxXZ();
+
+        foreach (var agent in agentCluster) {
+            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x);
+            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x);
+            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
+            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
+        }
+
+        return boundingBox;
+    }
+
+
+
     static List<List<GameObject>> GroupAgents(List<GameObject> agents, Vector3 direction) {
-
         List<List<GameObject>> agentClusters = new List<List<GameObject>>();
-
         List<GameObject> currentCluster = new List<GameObject>();
+
+        // Define a tolerance threshold
+        float tolerance = 5.0f; // Adjust this based on your needs
+
         for (int i = 0; i < agents.Count; i++) {
             if (i == 0) {
                 currentCluster.Add(agents[i]);
@@ -38,34 +82,31 @@ public static class AgentClustering
 
             bool isInCluster = false;
 
-            // check by x axis
-            if(direction == LinearAlgebra.XAxis) {
-                if(Math.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x) < World.AGENT_NAVMESH_BOUNDS_SIZE.x) {
+            // Check by the specified axis
+            if (direction == LinearAlgebra.XAxis) {
+                float distanceX = Mathf.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x);
+                if (distanceX < World.AGENT_NAVMESH_BOUNDS_SIZE.x + tolerance) {
                     isInCluster = true;
                 }
-            }
-            else if(direction == LinearAlgebra.ZAxis) {
-                if(Math.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z) < World.AGENT_NAVMESH_BOUNDS_SIZE.z) {
+            } else if (direction == LinearAlgebra.ZAxis) {
+                float distanceZ = Mathf.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z);
+                if (distanceZ < World.AGENT_NAVMESH_BOUNDS_SIZE.z + tolerance) {
                     isInCluster = true;
                 }
             }
 
-            if(isInCluster) {
+            if (isInCluster) {
                 currentCluster.Add(agents[i]);
-            } 
-            else {
+            } else {
                 agentClusters.Add(currentCluster);
-                currentCluster = new List<GameObject>
-                {
-                    agents[i]
-                };
+                currentCluster = new List<GameObject> { agents[i] };
             }
         }
 
-        // add the last cluster
         agentClusters.Add(currentCluster);
         return agentClusters;
     }
+
 
     static Dictionary<(int, int), List<GameObject>> CombineClusters
     (

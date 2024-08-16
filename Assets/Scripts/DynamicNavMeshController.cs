@@ -17,11 +17,9 @@ public class DynamicNavMeshController : MonoBehaviour
     List<GameObject> agents;
     List<GameObject> agentsInside;
     Bounds navMeshBounds;
-    Bounds smallerBounds;
     
     // PUBLIC GETTERS
     public Bounds NavMeshBounds { get => navMeshBounds; }
-    public Bounds SmallerBounds { get => smallerBounds; }
     public List<GameObject> AgentsInside { get => agentsInside; }
 
     void Awake() 
@@ -45,7 +43,6 @@ public class DynamicNavMeshController : MonoBehaviour
 
     public void SetNavMeshBounds(Bounds bounds) {
         navMeshBounds = bounds;
-        smallerBounds = new Bounds(bounds.center, bounds.size - World.SMALLER_BOUNDS_DIFF);
     }
 
     void Update() 
@@ -54,7 +51,7 @@ public class DynamicNavMeshController : MonoBehaviour
         if(State == DynamicNavMeshState.Ready) {
             agents = World.GetActiveAgents();
             foreach (var agent in agentsInside) {
-                if(!smallerBounds.Contains(agent.transform.position)) {
+                if(!navMeshBounds.Contains(agent.transform.position)) {
                     // mark for update
                     GlobalNavMeshController.MarkForUpdate();
                 }

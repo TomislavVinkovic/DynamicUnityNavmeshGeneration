@@ -70,4 +70,8 @@ public class BoundingBoxXZ {
         this.minZ = minZ;
         this.maxZ = maxZ;
     }
+
+    public Bounds ToBounds() {
+        return new Bounds(center, size);
+    }
 }
