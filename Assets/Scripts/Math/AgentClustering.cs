@@ -45,7 +45,7 @@ public static class AgentClustering
                 }
             }
             else if(direction == LinearAlgebra.ZAxis) {
-                if(Math.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z) < World.AGENT_NAVMESH_BOUNDS_SIZE.x) {
+                if(Math.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z) < World.AGENT_NAVMESH_BOUNDS_SIZE.z) {
                     isInCluster = true;
                 }
             }
@@ -67,9 +67,11 @@ public static class AgentClustering
         return agentClusters;
     }
 
-    static Dictionary<(int, int), List<GameObject>> CombineClusters(
+    static Dictionary<(int, int), List<GameObject>> CombineClusters
+    (
         List<List<GameObject>> agentClustersX, 
-        List<List<GameObject>> agentClustersZ)
+        List<List<GameObject>> agentClustersZ
+    )
     {
         // Create a dictionary to store the combined clusters
         Dictionary<(int, int), List<GameObject>> combinedClusters = new Dictionary<(int, int), List<GameObject>>();

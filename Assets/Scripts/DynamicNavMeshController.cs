@@ -24,8 +24,6 @@ public class DynamicNavMeshController : MonoBehaviour
     public Bounds SmallerBounds { get => smallerBounds; }
     public List<GameObject> AgentsInside { get => agentsInside; }
 
-    Vector3 SMALLER_BOUNDS_DIFF = new Vector3(10f, 0f, 10f);
-
     void Awake() 
     {
         id = GUID.Generate();
@@ -47,7 +45,7 @@ public class DynamicNavMeshController : MonoBehaviour
 
     public void SetNavMeshBounds(Bounds bounds) {
         navMeshBounds = bounds;
-        smallerBounds = new Bounds(bounds.center, bounds.size - SMALLER_BOUNDS_DIFF);
+        smallerBounds = new Bounds(bounds.center, bounds.size - World.SMALLER_BOUNDS_DIFF);
     }
 
     void Update() 

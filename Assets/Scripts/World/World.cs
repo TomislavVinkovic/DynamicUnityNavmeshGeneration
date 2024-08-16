@@ -8,7 +8,8 @@ using UnityEngine;
 
 public static class World
 {   
-    public static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(40f, 0f, 40f);
+    public static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(60f, 0f, 60f);
+    public static Vector3 SMALLER_BOUNDS_DIFF = new Vector3(10f, 0f, 10f);
     const string AGENT_TAG = "Agent";
     public static List<GameObject> GetActiveAgents()
     {
