@@ -53,12 +53,6 @@ public class DynamicNavMeshController : MonoBehaviour
         // only update if the navmeshsurface is not in the update process already
         if(State == DynamicNavMeshState.Ready) {
             agents = World.GetActiveAgents();
-    
-            foreach (var agent in agents) {
-                if(navMeshBounds.Contains(agent.transform.position)) {
-                    agentsInside.Add(agent);
-                }
-            }
             foreach (var agent in agentsInside) {
                 if(!smallerBounds.Contains(agent.transform.position)) {
                     // mark for update
