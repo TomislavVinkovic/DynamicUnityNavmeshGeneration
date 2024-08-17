@@ -74,10 +74,7 @@
     <Compile Include="Assets/Scripts/Math/AgentClustering.cs" />
     <Compile Include="Assets/Scripts/World/World.cs" />
     <Compile Include="Assets/Scripts/GlobalNavMeshController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets/Scripts/leftovers/oldCode.txt" />
-    <None Include="Assets/Scripts/output.txt" />
+    <Compile Include="Assets/Scripts/NavMeshMeshGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

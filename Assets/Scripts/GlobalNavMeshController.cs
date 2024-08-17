@@ -10,31 +10,27 @@ using UnityEngine.AI;
 public class GlobalNavMeshController : MonoBehaviour
 {   
     public GameObject navMeshBuilderObject;
+    public GameObject navMeshMeshGeneratorObject;
+
     NavMeshBuilder navMeshBuilder;
+    NavMeshMeshGenerator navMeshMeshGenerator;
 
     Dictionary<(int, int), DynamicNavMeshController> navMeshSurfaces = new Dictionary<(int, int), DynamicNavMeshController>();
     Queue<DynamicNavMeshController> updateQueue = new Queue<DynamicNavMeshController>();
 
     public LevelGenerator LevelGenerator;
 
-    public Color navMeshColor = new Color(0.0f, 0.5f, 0.5f, 0.5f);
-    MeshFilter meshFilter;
-
-    bool shouldUpdate = false;
-    public bool ShouldUpdate { get => shouldUpdate; }
+    public bool ShouldUpdate { get; private set; }
     public void MarkForUpdate() {
-        shouldUpdate = true;
+        ShouldUpdate = true;
     }
     public void FinishUpdate() {
-        shouldUpdate = false;
+        ShouldUpdate = false;
     }
 
     void Awake() {
         navMeshBuilder = navMeshBuilderObject.GetComponent<NavMeshBuilder>();
-        meshFilter = gameObject.AddComponent<MeshFilter>();
-        var meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshRenderer.material = CreateNavMeshMaterial();
-
+        navMeshMeshGenerator = navMeshMeshGeneratorObject.GetComponent<NavMeshMeshGenerator>();
     }
 
     void Start() 
@@ -47,7 +43,7 @@ public class GlobalNavMeshController : MonoBehaviour
     }
 
     void Update() {
-        if(shouldUpdate && LevelGenerator.IsLevelGenerated) {
+        if(ShouldUpdate && LevelGenerator.IsLevelGenerated) {
             RecalculateNavMeshes();
         }
     }
@@ -63,7 +59,7 @@ public class GlobalNavMeshController : MonoBehaviour
                 {
                     surfaceController.State = DynamicNavMeshState.Building;
                     surfaceController.BuildNavMesh();
-                    GenerateNavMeshMesh();
+                    navMeshMeshGenerator.GenerateNavMeshMesh();
                 }
                 
                 else if(surfaceController.State == DynamicNavMeshState.Destroy)
@@ -77,9 +73,6 @@ public class GlobalNavMeshController : MonoBehaviour
     }
 
     void RecalculateNavMeshes() {
-
-        // TODO: optimize further by only recalculating the affected navmeshes
-
         // cluster agents
         var agentClusters = AgentClustering.ClusterAgents();
 
@@ -98,41 +91,5 @@ public class GlobalNavMeshController : MonoBehaviour
         }
 
         FinishUpdate();
-    }
-
-    private void GenerateNavMeshMesh() {
-        NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
-
-        // Create a new mesh
-        Mesh mesh = new Mesh();
-
-        // Get the vertices in world space and convert them to the local space of the NavMeshSurface
-        Vector3[] localVertices = new Vector3[triangulation.vertices.Length];
-        for (int i = 0; i < triangulation.vertices.Length; i++)
-        {
-            localVertices[i] = transform.InverseTransformPoint(triangulation.vertices[i]);
-        }
-
-        // Assign the local vertices and triangles to the mesh
-        mesh.vertices = localVertices;
-        mesh.triangles = triangulation.indices;
-        mesh.RecalculateNormals();
-
-        meshFilter.mesh = mesh;
-    }
-    private Material CreateNavMeshMaterial()
-    {
-        Material mat = new Material(Shader.Find("Standard"));
-        mat.color = navMeshColor;
-        mat.SetFloat("_Mode", 3); // Make it transparent
-        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        mat.SetInt("_ZWrite", 0);
-        mat.DisableKeyword("_ALPHATEST_ON");
-        mat.EnableKeyword("_ALPHABLEND_ON");
-        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        mat.renderQueue = 3000;
-
-        return mat;
     }
 }
