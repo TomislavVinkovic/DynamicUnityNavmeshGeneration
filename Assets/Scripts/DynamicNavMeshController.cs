@@ -62,6 +62,11 @@ public class DynamicNavMeshController : MonoBehaviour
                 {
                     // Mark for update
                     GlobalNavMeshController.MarkForUpdate();
+                    foreach(var agentInside in agentsInside)
+                    {
+                        agentInside.GetComponent<NavMeshAgent>().enabled = false;
+                    }
+                    break;
                 }
             }
         }
@@ -73,7 +78,7 @@ public class DynamicNavMeshController : MonoBehaviour
         navMeshSurface.center = Vector3.zero;
         navMeshSurface.size = new Vector3(
             navMeshBounds.size.x,
-            0,
+            1f,
             navMeshBounds.size.z
         );
 
@@ -82,34 +87,26 @@ public class DynamicNavMeshController : MonoBehaviour
 
         foreach (var agent in agents)
         {
-            var center = new Vector3(
-                transform.position.x,
-                0,
-                transform.position.z
-            );
             if (navMeshBounds.Contains(agent.transform.position - Vector3.up))
             {
                 agentsInside.Add(agent);
             }
         }
-
         agentsInside.ForEach(agent => ReactivateAgentIfOnNavMesh(agent));
     }
 
     private void ReactivateAgentIfOnNavMesh(GameObject agent)
     {
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(agent.transform.position, out hit, 1.0f, NavMesh.AllAreas))
-        {
-            if (!agent.GetComponent<NavMeshAgent>())
-            {
-                agent.AddComponent<NavMeshAgent>();
-            }
-            agent.transform.position = hit.position;
+        if (!agent.GetComponent<NavMeshAgent>()) {
+            var navMeshAgent = agent.AddComponent<NavMeshAgent>();
+            navMeshAgent.stoppingDistance = 0.1f;
+        }
+        else {
+            var agentMovementController = agent.GetComponent<AgentMovement>();
             var navMeshAgent = agent.GetComponent<NavMeshAgent>();
             navMeshAgent.stoppingDistance = 0.1f;
-
-            navMeshAgent.isStopped = false;
+            navMeshAgent.enabled = true;
         }
+        
     }
 }

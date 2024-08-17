@@ -32,7 +32,7 @@ public class NavMeshBuilder : MonoBehaviour
 
     GameObject InstantiateDynamicNavMeshSurface(Vector3 center) {
         // maybe change later
-        center.y = 0;
+        center.y = 1.5f;
 
         var navMeshSurface = Instantiate (
             dynamicNavMeshPrefab,
