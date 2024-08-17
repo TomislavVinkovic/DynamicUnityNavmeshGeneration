@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
 
 /*
     * Class used for agent clustering operations
 */
 public static class AgentClustering
 {
-    public static Dictionary<(int, int), List<GameObject>> ClusterAgents() {
+    public static Dictionary<(int, int), AgentCluster> ClusterAgents() {
         // Get all agents
         var agents = World.GetActiveAgents();
 
@@ -25,16 +23,16 @@ public static class AgentClustering
         var combinedClusters = CombineClusters(agentClustersX, agentClustersZ);
 
         // Merge nearby clusters
-        var mergedClusters = MergeNearbyClusters(combinedClusters);
+        var mergedClusters = MergeOverlappingClusters(combinedClusters);
         return mergedClusters;
     }
 
-    static Dictionary<(int, int), List<GameObject>> MergeNearbyClusters(Dictionary<(int, int), List<GameObject>> clusters) {
+    static Dictionary<(int, int), AgentCluster> MergeOverlappingClusters(Dictionary<(int, int), AgentCluster> clusters) {
         bool clustersMerged;
         do {
             clustersMerged = false;
             var clustersToRemove = new HashSet<(int, int)>();
-            var mergedClusters = new Dictionary<(int, int), List<GameObject>>(clusters);
+            var mergedClusters = new Dictionary<(int, int), AgentCluster>(clusters);
 
             foreach (var cluster1 in clusters) {
                 if (clustersToRemove.Contains(cluster1.Key)) continue;
@@ -69,37 +67,18 @@ public static class AgentClustering
     }
 
 
-    static bool ShouldMergeClusters(List<GameObject> cluster1, List<GameObject> cluster2) {
+    static bool ShouldMergeClusters(AgentCluster cluster1, AgentCluster cluster2) {
         // Logic to determine if clusters should be merged, based on proximity or overlap
         // For example, comparing bounding boxes:
-        var bounds1 = GetBoundingBox(cluster1);
-        var bounds2 = GetBoundingBox(cluster2);
+        var bounds1 = cluster1.GetBoundingBoxXZ();
+        var bounds2 = cluster2.GetBoundingBoxXZ();
         return bounds1.Intersects(bounds2);
     }
 
-    static BoundingBoxXZ GetBoundingBox(List<GameObject> agentCluster) {
-        BoundingBoxXZ boundingBox = new BoundingBoxXZ();
 
-        foreach (var agent in agentCluster) {
-            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x);
-            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x);
-            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
-            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
-        }
-
-        boundingBox.minX -= World.BOUNDING_BOX_PADDING_X;
-        boundingBox.maxX += World.BOUNDING_BOX_PADDING_X;
-        boundingBox.minZ -= World.BOUNDING_BOX_PADDING_Z;
-        boundingBox.maxZ += World.BOUNDING_BOX_PADDING_Z;
-
-        return boundingBox;
-    }
-
-
-
-    static List<List<GameObject>> GroupAgents(List<GameObject> agents, Vector3 direction) {
-        List<List<GameObject>> agentClusters = new List<List<GameObject>>();
-        List<GameObject> currentCluster = new List<GameObject>();
+    static List<AgentCluster> GroupAgents(AgentCluster agents, Vector3 direction) {
+        List<AgentCluster> agentClusters = new List<AgentCluster>();
+        AgentCluster currentCluster = new AgentCluster();
 
         for (int i = 0; i < agents.Count; i++) {
             if (i == 0) {
@@ -126,7 +105,7 @@ public static class AgentClustering
                 currentCluster.Add(agents[i]);
             } else {
                 agentClusters.Add(currentCluster);
-                currentCluster = new List<GameObject> { agents[i] };
+                currentCluster = new AgentCluster { agents[i] };
             }
         }
 
@@ -135,14 +114,14 @@ public static class AgentClustering
     }
 
 
-    static Dictionary<(int, int), List<GameObject>> CombineClusters
+    static Dictionary<(int, int), AgentCluster> CombineClusters
     (
-        List<List<GameObject>> agentClustersX, 
-        List<List<GameObject>> agentClustersZ
+        List<AgentCluster> agentClustersX, 
+        List<AgentCluster> agentClustersZ
     )
     {
         // Create a dictionary to store the combined clusters
-        Dictionary<(int, int), List<GameObject>> combinedClusters = new Dictionary<(int, int), List<GameObject>>();
+        Dictionary<(int, int), AgentCluster> combinedClusters = new Dictionary<(int, int), AgentCluster>();
 
         // Map each GameObject to its cluster index in the x axis
         Dictionary<GameObject, int> xClusterMap = new Dictionary<GameObject, int>();
@@ -173,7 +152,7 @@ public static class AgentClustering
             var combinedKey = (xCluster, zCluster);
             if (!combinedClusters.ContainsKey(combinedKey))
             {
-                combinedClusters[combinedKey] = new List<GameObject>();
+                combinedClusters[combinedKey] = new AgentCluster();
             }
             combinedClusters[combinedKey].Add(agent);
         }

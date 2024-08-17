@@ -68,6 +68,8 @@
     <Compile Include="Assets/Scripts/Math/LinearAlgebra.cs" />
     <Compile Include="Assets/Scripts/DynamicNavMeshController.cs" />
     <Compile Include="Assets/Scripts/Mesh/NavMeshBuilder.cs" />
+    <Compile Include="Assets/Scripts/Math/AgentCluster.cs" />
+    <Compile Include="Assets/Scripts/Math/BoundingBoxXZ.cs" />
     <Compile Include="Assets/Scripts/LevelGenerator.cs" />
     <Compile Include="Assets/Scripts/AgentManager.cs" />
     <Compile Include="Assets/Scripts/AgentMovement.cs" />

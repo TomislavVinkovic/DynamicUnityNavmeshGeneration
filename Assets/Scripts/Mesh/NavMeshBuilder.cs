@@ -6,18 +6,17 @@ using UnityEngine;
 */
 public class NavMeshBuilder : MonoBehaviour
 {
-   
     public GameObject dynamicNavMeshPrefab;
 
     public Dictionary<(int, int), DynamicNavMeshController> BuildNavMeshesFromAgentClusters(
-        Dictionary<(int, int), List<GameObject>> agentClusters
+        Dictionary<(int, int), AgentCluster> agentClusters
     )
     {
         var navMeshSurfaces = new Dictionary<(int, int), DynamicNavMeshController>();
 
         foreach (var (key, cluster) in agentClusters)
         {
-            BoundingBoxXZ boundingBox = GetBoundingBox(cluster);
+            BoundingBoxXZ boundingBox = cluster.GetBoundingBoxXZ();
             var navMeshSurface = InstantiateDynamicNavMeshSurface(boundingBox.center);
             var surfaceController = navMeshSurface.GetComponent<DynamicNavMeshController>();
 
@@ -42,23 +41,5 @@ public class NavMeshBuilder : MonoBehaviour
 
         // return the navMeshSurface
         return navMeshSurface;
-    }
-
-    BoundingBoxXZ GetBoundingBox(List<GameObject> agentCluster) {
-        // case for 1 agent
-        BoundingBoxXZ boundingBox = new BoundingBoxXZ();
-
-        foreach(var agent in agentCluster) {
-            boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x);
-            boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x);
-            boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
-            boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
-        }
-        boundingBox.minX -= World.BOUNDING_BOX_PADDING_X;
-        boundingBox.maxX += World.BOUNDING_BOX_PADDING_X;
-        boundingBox.minZ -= World.BOUNDING_BOX_PADDING_Z;
-        boundingBox.maxZ += World.BOUNDING_BOX_PADDING_Z;
-
-        return boundingBox;
     }
 }
