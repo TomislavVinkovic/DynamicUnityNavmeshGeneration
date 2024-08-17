@@ -12,7 +12,8 @@ public static class World
     public static Vector3 SMALLER_BOUNDS_DIFF = new Vector3(10f, 0f, 10f);
     public static float BOUNDING_BOX_PADDING_X = 20f;
     public static float BOUNDING_BOX_PADDING_Z = 20f;
-    const string AGENT_TAG = "Agent";
+    public const string AGENT_TAG = "Agent";
+    public const string WALL_TAG = "Wall";
     public static List<GameObject> GetActiveAgents()
     {
         return new List<GameObject>(GameObject.FindGameObjectsWithTag(AGENT_TAG));

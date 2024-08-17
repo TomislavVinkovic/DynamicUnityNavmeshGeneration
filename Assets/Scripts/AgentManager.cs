@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AgentManager : MonoBehaviour
@@ -39,7 +37,7 @@ public class AgentManager : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if(hit.collider.CompareTag("Agent")) {
+                if(hit.collider.CompareTag(World.AGENT_TAG)) {
                     AgentMovement agent = hit.collider.GetComponentInParent<AgentMovement>();
 
                     if (agent != null) {
@@ -57,7 +55,7 @@ public class AgentManager : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if (hit.collider != null)
+                if (hit.collider != null && hit.collider.CompareTag("Ground"))
                 {
                     selectedAgent.MoveToPosition(hit.point); 
                 }
