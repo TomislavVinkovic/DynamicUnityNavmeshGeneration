@@ -26,21 +26,13 @@ public class AgentMovement : MonoBehaviour
         }
         else
         {
-            // Position is outside the NavMesh
-            Debug.LogWarning("Destination is outside the NavMesh. Moving to the nearest point.");
-            Debug.Log(position);
             
 
             // Move to the nearest valid point
             Vector3 nearestPoint = FindNearestNavMeshPoint(position);
-            Debug.Log(nearestPoint);
             if (nearestPoint != position)
             {
                 navMeshAgent.SetDestination(nearestPoint);
-            }
-            else
-            {
-                Debug.LogWarning("No valid NavMesh point found. Staying at the current position.");
             }
         }
     }
