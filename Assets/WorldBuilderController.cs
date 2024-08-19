@@ -7,13 +7,16 @@ public class WorldBuilderController : MonoBehaviour
     public WorldBuilderState State { get; private set; }
     public GameObject levelGenerator;
     public GameObject agentGenerator;
+    public GameObject globalNavMesh;
     LevelGenerator levelGeneratorController;
     AgentGenerator agentGeneratorController;
+    GlobalNavMeshController globalNavMeshController;
 
     void Awake()
     {
         levelGeneratorController = levelGenerator.GetComponent<LevelGenerator>();
         agentGeneratorController = agentGenerator.GetComponent<AgentGenerator>();
+        globalNavMeshController = globalNavMesh.GetComponent<GlobalNavMeshController>();
         State = WorldBuilderState.Standby;
     }
 
@@ -30,6 +33,7 @@ public class WorldBuilderController : MonoBehaviour
 
     public void Reset()
     {
+        State = WorldBuilderState.Resetting;
         StartCoroutine(ResetWorld());
     }
 
@@ -44,12 +48,15 @@ public class WorldBuilderController : MonoBehaviour
         // Set the state to Ready
         State = WorldBuilderState.Ready;
 
+        globalNavMeshController.MarkForUpdate();
+
         // Build the world
         yield return null;
     }
 
     IEnumerator ResetWorld()
     {
+        globalNavMeshController.Reset();
         // Destroy the level
         levelGeneratorController.DestroyLevel();
 

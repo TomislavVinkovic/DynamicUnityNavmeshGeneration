@@ -29,6 +29,7 @@ public class AgentGenerator : MonoBehaviour
         var agents = World.GetActiveAgents();
         foreach (var agent in agents)
         {
+            if(agent == null) continue;
             Destroy(agent.gameObject);
         }
     }

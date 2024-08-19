@@ -62,6 +62,7 @@ public class LevelGenerator : MonoBehaviour
 		var walls = GameObject.FindGameObjectsWithTag("Wall");
 		foreach (var wall in walls)
 		{
+            if(wall == null) continue;
 			Destroy(wall);
 		}
 		IsLevelGenerated = false;

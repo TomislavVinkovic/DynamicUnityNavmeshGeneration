@@ -377,6 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelGenerator: {fileID: 1769774800}
   agentGenerator: {fileID: 1099725264}
+  globalNavMesh: {fileID: 2113539688}
 --- !u!4 &242588944
 Transform:
   m_ObjectHideFlags: 0
@@ -1884,7 +1885,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navMeshBuilderObject: {fileID: 421966486}
   navMeshMeshGeneratorObject: {fileID: 513444188}
-  LevelGenerator: {fileID: 1769774801}
+  worldBuilderObject: {fileID: 242588942}
 --- !u!4 &2113539690
 Transform:
   m_ObjectHideFlags: 0

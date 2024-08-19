@@ -1,11 +1,6 @@
- using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.AI;
-
-/*
-    * Class used for managing navmeshes and agents
-*/
 
 public class GlobalNavMeshController : MonoBehaviour
 {   
@@ -18,7 +13,8 @@ public class GlobalNavMeshController : MonoBehaviour
     Dictionary<(int, int), DynamicNavMeshController> navMeshSurfaces = new Dictionary<(int, int), DynamicNavMeshController>();
     Queue<DynamicNavMeshController> updateQueue = new Queue<DynamicNavMeshController>();
 
-    public LevelGenerator LevelGenerator;
+    public GameObject worldBuilderObject;
+    WorldBuilderController worldBuilderController;
 
     public bool ShouldUpdate { get; private set; }
     public void MarkForUpdate() {
@@ -31,6 +27,7 @@ public class GlobalNavMeshController : MonoBehaviour
     void Awake() {
         navMeshBuilder = navMeshBuilderObject.GetComponent<NavMeshBuilder>();
         navMeshMeshGenerator = navMeshMeshGeneratorObject.GetComponent<NavMeshMeshGenerator>();
+        worldBuilderController = worldBuilderObject.GetComponent<WorldBuilderController>();
     }
 
     void Start() 
@@ -43,8 +40,15 @@ public class GlobalNavMeshController : MonoBehaviour
     }
 
     void Update() {
-        if(ShouldUpdate && LevelGenerator.IsLevelGenerated) {
+        if(ShouldUpdate && worldBuilderController.State == WorldBuilderState.Ready) {
             RecalculateNavMeshes();
+        }
+    }
+
+    public void Reset() {
+        foreach( var (_, surfaceController) in navMeshSurfaces ) {
+            surfaceController.State = DynamicNavMeshState.Destroy;
+            updateQueue.Enqueue(surfaceController);
         }
     }
 
@@ -55,6 +59,7 @@ public class GlobalNavMeshController : MonoBehaviour
             if (updateQueue.Count > 0)
             {
                 var surfaceController = updateQueue.Dequeue();
+                
                 if(surfaceController.State == DynamicNavMeshState.Build)
                 {
                     surfaceController.State = DynamicNavMeshState.Building;
@@ -65,7 +70,11 @@ public class GlobalNavMeshController : MonoBehaviour
                 else if(surfaceController.State == DynamicNavMeshState.Destroy)
                 {
                     surfaceController.State = DynamicNavMeshState.Destroying;
-                    Destroy(surfaceController.gameObject);
+                    if(surfaceController != null && surfaceController.gameObject != null)
+                    {
+                        Destroy(surfaceController.gameObject);
+                    }
+                    navMeshMeshGenerator.GenerateNavMeshMesh();
                 }
             }
             yield return null;
@@ -88,6 +97,7 @@ public class GlobalNavMeshController : MonoBehaviour
             // assign the global navmesh controller
             surfaceController.GlobalNavMeshController = this;
             updateQueue.Enqueue(surfaceController);
+            Debug.Log("Enqueed");
         }
 
         FinishUpdate();
