@@ -10,7 +10,6 @@ using UnityEditor;
 ***/
 public class DynamicNavMeshController : MonoBehaviour
 {
-    public GUID id;
     public DynamicNavMeshState State;
     public NavMeshSurface navMeshSurface;
     public GlobalNavMeshController GlobalNavMeshController { get; set; }
@@ -24,7 +23,6 @@ public class DynamicNavMeshController : MonoBehaviour
 
     void Awake()
     {
-        id = GUID.Generate();
         State = DynamicNavMeshState.Build;
         navMeshSurface = GetComponent<NavMeshSurface>();
 

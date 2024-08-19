@@ -43,6 +43,11 @@ public class GameStateController : MonoBehaviour
         ResetButton.onClick.AddListener(HandleResetButtonPressed);
     }
 
+    void Update() {
+        UpdateSlidersInteractable();
+        ExitGameIfEscapePressed();        
+    }
+
     void UpdateNumberOfAgents()
     {
         NumberOfAgents = (int)agentSlider.value; // Convert slider value to int
@@ -63,5 +68,15 @@ public class GameStateController : MonoBehaviour
     void HandleResetButtonPressed()
     {
         worldBuilderController.Reset();
+    }
+
+    void UpdateSlidersInteractable() {
+        agentSlider.interactable = worldBuilderController.State.Equals(WorldBuilderState.Standby);
+        obstacleDensitySlider.interactable = worldBuilderController.State.Equals(WorldBuilderState.Standby);
+    }
+    void ExitGameIfEscapePressed() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.Quit();
+        }
     }
 }
