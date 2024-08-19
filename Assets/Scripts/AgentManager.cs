@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class AgentManager : MonoBehaviour
 {
-    public static AgentManager Instance { get; private set; } // Singleton pattern for easy access
+    public static AgentManager Instance { get; private set; }
 
-    private AgentMovement selectedAgent; // The currently selected agent
+    private AgentMovement selectedAgent;
     private Camera mainCamera;
 
     void Awake()

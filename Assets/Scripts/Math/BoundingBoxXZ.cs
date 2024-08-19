@@ -40,6 +40,10 @@ public class BoundingBoxXZ {
         return xOverlap && zOverlap;
     }
 
+    public bool Intersects(Vector3 point) {
+        return point.x >= minX && point.x <= maxX && point.z >= minZ && point.z <= maxZ;
+    }
+
     public BoundingBoxXZ () {
         minX = 1e9f;
         maxX = -1e9f;
