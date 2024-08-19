@@ -3,9 +3,13 @@ using UnityEngine;
 public class AgentManager : MonoBehaviour
 {
     public static AgentManager Instance { get; private set; }
+    public Material selectedMaterial;
+    public Material defaultMaterial;
+    public Material hoverMaterial;
 
-    private AgentMovement selectedAgent;
-    private Camera mainCamera;
+    GameObject selectedAgent;
+    GameObject hoveredAgent;
+    Camera mainCamera;
 
     void Awake()
     {
@@ -28,6 +32,7 @@ public class AgentManager : MonoBehaviour
     {
         HandleAgentSelection();
         HandleMovementInput();
+        HandleAgentHover();
     }
 
     void HandleAgentSelection()
@@ -37,11 +42,19 @@ public class AgentManager : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                if(hit.collider.CompareTag(World.AGENT_TAG)) {
-                    AgentMovement agent = hit.collider.GetComponentInParent<AgentMovement>();
+                if (hit.collider.CompareTag(World.AGENT_TAG)) 
+                {   
+                    Renderer selectedAgentRenderer = hit.collider.GetComponentInParent<Renderer>();
+                    GameObject agent = hit.collider.gameObject;
 
-                    if (agent != null) {
-                        selectedAgent = agent; // Set the clicked agent as the selected agent
+                    if (agent != null) 
+                    {
+                        if(selectedAgent != null)
+                        {
+                            selectedAgent.GetComponent<Renderer>().material = defaultMaterial;
+                        }
+                        selectedAgent = agent;
+                        selectedAgentRenderer.material = selectedMaterial;
                     }
                 }
             }
@@ -50,21 +63,55 @@ public class AgentManager : MonoBehaviour
 
     void HandleMovementInput()
     {
-        if (selectedAgent != null && Input.GetMouseButtonDown(1)) // Right-click to move the selected agent
+        if (selectedAgent != null && Input.GetMouseButtonDown(1))
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 if (hit.collider != null && hit.collider.CompareTag("Ground"))
                 {
-                    selectedAgent.MoveToPosition(hit.point); 
+                    AgentMovement agentMovement = selectedAgent.GetComponent<AgentMovement>();
+                    agentMovement.MoveToPosition(hit.point);
                 }
             }
         }
     }
 
-    public AgentMovement GetSelectedAgent()
+    void HandleAgentHover()
     {
-        return selectedAgent;
+        if (Input.GetMouseButton(0)) return;
+
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.CompareTag(World.AGENT_TAG))
+            {
+                GameObject hoveredAgentNew = hit.collider.gameObject;
+                Renderer hoveredAgentNewRenderer = hit.collider.GetComponentInParent<Renderer>();
+
+                if (hoveredAgent != null && hoveredAgent != selectedAgent)
+                {
+                    hoveredAgent.GetComponent<Renderer>().material = defaultMaterial;
+                    hoveredAgent = hoveredAgentNew;
+                    hoveredAgentNewRenderer.material = hoverMaterial;
+                }
+                if(hoveredAgent == selectedAgent)
+                {
+                    hoveredAgentNewRenderer.material = selectedMaterial;
+                    hoveredAgent = hoveredAgentNew;
+                }
+                if(hoveredAgent == null)
+                {
+                    hoveredAgentNewRenderer.material = hoverMaterial;
+                    hoveredAgent = hoveredAgentNew;
+                }
+            }
+            else {
+                if(hoveredAgent != null && hoveredAgent != selectedAgent) {
+                    hoveredAgent.GetComponent<Renderer>().material = defaultMaterial;
+                    hoveredAgent = null;
+                }
+            }
+        }
     }
 }

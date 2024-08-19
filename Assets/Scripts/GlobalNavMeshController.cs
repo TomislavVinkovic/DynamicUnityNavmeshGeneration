@@ -97,7 +97,6 @@ public class GlobalNavMeshController : MonoBehaviour
             // assign the global navmesh controller
             surfaceController.GlobalNavMeshController = this;
             updateQueue.Enqueue(surfaceController);
-            Debug.Log("Enqueed");
         }
 
         FinishUpdate();
