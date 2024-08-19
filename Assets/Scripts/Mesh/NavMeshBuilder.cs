@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-    * Class used for building navmeshes from agent clusters
-*/
+/************************************************************************************
+ * This class is used to build the dynamic nav meshes in the scene
+ * It is used to create the dynamic nav meshes based on the agent clusters
+ ************************************************************************************/
 public class NavMeshBuilder : MonoBehaviour
 {
     public GameObject dynamicNavMeshPrefab;

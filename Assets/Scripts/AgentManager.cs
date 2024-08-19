@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/************************************************************************************
+ * This class is used to manage the agents in the scene
+ * It is used to select, move and hover over agents
+************************************************************************************/
 public class AgentManager : MonoBehaviour
 {
     public static AgentManager Instance { get; private set; }

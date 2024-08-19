@@ -3,6 +3,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/************************************************************************************
+ * This class is used to control the game state
+ * It is used to handle the UI components and the game state
+ ************************************************************************************/
 public class GameStateController : MonoBehaviour
 {
     // Public variables to link to the UI components

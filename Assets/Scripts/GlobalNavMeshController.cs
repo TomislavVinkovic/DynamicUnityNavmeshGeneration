@@ -2,6 +2,10 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+/***
+    * Class used for building a single dynamic navmesh
+    * It is also used to check if any agents are so out of bounds so the navmesh needs to be rebuilt
+***/
 public class GlobalNavMeshController : MonoBehaviour
 {   
     public GameObject navMeshBuilderObject;

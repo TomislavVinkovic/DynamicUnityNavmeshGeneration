@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/*
-    * Class used for agent clustering operations
-*/
+/**
+ * This class is used to cluster agents based on their positions in the scene.
+ * It groups agents based on their x and z positions, and then combines the clusters.
+ */
 public static class AgentClustering
 {
     public static Dictionary<(int, int), AgentCluster> ClusterAgents() {

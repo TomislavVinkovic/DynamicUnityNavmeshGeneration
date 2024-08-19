@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/************************************************************************************
+ * This class is used to generate agents in the scene
+ * It is used to place agents randomly in the scene
+ ************************************************************************************/
 public class AgentGenerator : MonoBehaviour
 {
     public int width = 200;

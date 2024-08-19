@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEditor;
 
-/*
+/***
     * Class used for building a single dynamic navmesh
     * It is also used to check if any agents are so out of bounds so the navmesh needs to be rebuilt
-*/
+***/
 public class DynamicNavMeshController : MonoBehaviour
 {
     public GUID id;
@@ -102,7 +102,6 @@ public class DynamicNavMeshController : MonoBehaviour
             navMeshAgent.stoppingDistance = 0.1f;
         }
         else {
-            var agentMovementController = agent.GetComponent<AgentMovement>();
             var navMeshAgent = agent.GetComponent<NavMeshAgent>();
             navMeshAgent.stoppingDistance = 0.1f;
             navMeshAgent.enabled = true;

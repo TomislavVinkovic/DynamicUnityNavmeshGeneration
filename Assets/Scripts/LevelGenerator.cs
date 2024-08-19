@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/***
+* This class is used to generate a level with walls and obstacles
+***/
 public class LevelGenerator : MonoBehaviour
 {
     public int width = 200;
@@ -36,14 +39,21 @@ public class LevelGenerator : MonoBehaviour
 	// Create a grid based level
 	public void GenerateLevel(float obstacleDensity)
 	{
+        float wallWidth = World.WALL_WIDTH;
 		// Loop over the grid
-		for (int x = 0; x <= width; x+=2)
+		for (int x = 0; x <= width; x+=(int)wallWidth)
 		{
-			for (int z = 0; z <= height; z+=2)
+			for (int z = 0; z <= height; z+=(int)wallWidth)
 			{
 				// Would the wall intersect with an agent (bounds)?
 				// If not, spawn the wall
-				BoundingBoxXZ wallBounds = new BoundingBoxXZ(x-1, x+1, z-1, z+1);
+                
+				BoundingBoxXZ wallBounds = new BoundingBoxXZ(
+                    x-wallWidth/2, 
+                    x+wallWidth/2, 
+                    z-wallWidth/2, 
+                    z+wallWidth/2
+                );
 				bool intersectsAgent = DoesWallIntersectAgent(wallBounds);
 
 
@@ -71,6 +81,9 @@ public class LevelGenerator : MonoBehaviour
 	// possible point of failure
 	private bool DoesWallIntersectAgent(BoundingBoxXZ wallBounds)
     {
+
+        float agentWidth = World.AGENT_WIDTH;
+
         float minX = wallBounds.minX;
         float maxX = wallBounds.maxX;
 
@@ -90,10 +103,10 @@ public class LevelGenerator : MonoBehaviour
             if (agentPosition.z >= wallBounds.minZ && agentPosition.z <= wallBounds.maxZ)
             {
                 BoundingBoxXZ agentBounds = new BoundingBoxXZ(
-					agentPosition.x - 0.5f, 
-					agentPosition.x + 0.5f,
-					agentPosition.z - 0.5f,
-					agentPosition.z + 0.5f
+					agentPosition.x - agentWidth / 2, 
+					agentPosition.x + agentWidth / 2,
+					agentPosition.z - agentWidth / 2,
+					agentPosition.z + agentWidth / 2
 				);
 
                 // Perform precise bounding box check
@@ -109,6 +122,7 @@ public class LevelGenerator : MonoBehaviour
 
     private int FindFirstAgentInRange(float minX)
     {
+        // Binary search to find the first agent with x >= minX
         int left = 0;
         int right = agents.Count - 1;
 

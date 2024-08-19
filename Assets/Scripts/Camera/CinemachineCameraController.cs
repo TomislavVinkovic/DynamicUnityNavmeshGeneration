@@ -1,19 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
+/************************************************************************************
+ * This class is used to control the Cinemachine camera
+ * It is used to move the camera around the scene
+ ************************************************************************************/
 public class CinemachineCameraController : MonoBehaviour
 {
     public float MoveSpeed = 10f;
-    public float ZoomSpeed = 2f;
+    public float ZoomSpeed = 10f;
     public float MinZoomDistance = -50f;
     public float MaxZoomDistance = 50f;
 
-    private Cinemachine.CinemachineFreeLook freeLookCamera;
+    private CinemachineFreeLook freeLookCamera;
 
     void Start()
     {
-        freeLookCamera = GetComponent<Cinemachine.CinemachineFreeLook>();
+        freeLookCamera = GetComponent<CinemachineFreeLook>();
     }
 
     void Update() {

@@ -2,6 +2,9 @@
 using System;
 using UnityEngine;
 
+/************************************************************************************
+ * This class is used to represent a bounding box in 2D space (x, z)
+ ************************************************************************************/
 public class BoundingBoxXZ {
     float AGENT_NAVMESH_BOUNDS_Y = 5f;
     public float minX;

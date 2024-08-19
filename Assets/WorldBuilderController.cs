@@ -1,7 +1,10 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
+/************************************************************************************
+ * This class is used to control the world building process
+ * It is used to generate the level and agents in the scene
+ ************************************************************************************/
 public class WorldBuilderController : MonoBehaviour
 {   
     public WorldBuilderState State { get; private set; }

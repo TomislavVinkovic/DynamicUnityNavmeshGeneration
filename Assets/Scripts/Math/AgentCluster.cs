@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Wrapper class for a list of GameObjects
+/**
+ * This class is a wrapper for a list of GameObjects. It provides additional functionality to work with the list.
+ * It also provides an implicit conversion from List<GameObject> to AgentCluster.
+ */
 public class AgentCluster : IEnumerable<GameObject>
 {
     // Internal list to hold the GameObjects

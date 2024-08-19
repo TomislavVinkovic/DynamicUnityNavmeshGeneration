@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+/************************************************************************************
+ * This class is used to generate a mesh from the NavMesh data and display it in the scene
+ * It is used to visualize the NavMesh in the scene view
+ ************************************************************************************/
 public class NavMeshMeshGenerator : MonoBehaviour
 {
     public Color navMeshColor = new Color(0.0f, 0.5f, 0.5f, 0.5f);
@@ -33,6 +37,9 @@ public class NavMeshMeshGenerator : MonoBehaviour
 
         meshFilter.mesh = mesh;
     }
+
+    // Create a material for the NavMesh
+    // Code used as is
     Material CreateNavMeshMaterial()
     {
         Material mat = new Material(Shader.Find("Standard"));
