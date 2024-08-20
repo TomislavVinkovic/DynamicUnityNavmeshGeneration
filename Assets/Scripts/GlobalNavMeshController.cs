@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.AI;
 
 /***
     * Class used for building a single dynamic navmesh
@@ -86,6 +87,10 @@ public class GlobalNavMeshController : MonoBehaviour
     }
 
     void RecalculateNavMeshes() {
+        var agents = World.GetActiveAgents();
+        foreach( var agent in agents ) {
+            agent.GetComponent<NavMeshAgent>().enabled = false;
+        }
         // cluster agents
         var agentClusters = AgentClustering.ClusterAgents();
 
