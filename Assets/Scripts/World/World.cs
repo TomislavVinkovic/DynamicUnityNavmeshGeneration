@@ -6,16 +6,16 @@ using UnityEngine;
  * It is used to store the world constants such as agent tag, wall tag, etc.
 ************************************************************************************/
 
-public static class World
+public class World
 {   
     public static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(10f, 0f, 10f);
     public static Vector3 SMALLER_BOUNDS_DIFF = new Vector3(10f, 0f, 10f);
     public static float AGENT_WIDTH = 1f;
     public static float WALL_WIDTH = 2f;
-    public static float BOUNDING_BOX_PADDING_X = 20f;
-    public static float BOUNDING_BOX_PADDING_Z = 20f;
     public const string AGENT_TAG = "Agent";
     public const string WALL_TAG = "Wall";
+    public const string GAME_STATE_CONTROLLER_TAG = "GameStateController";
+
     public static List<GameObject> GetActiveAgents()
     {
         return new List<GameObject>(GameObject.FindGameObjectsWithTag(AGENT_TAG));

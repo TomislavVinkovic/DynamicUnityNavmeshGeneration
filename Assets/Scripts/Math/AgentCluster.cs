@@ -10,6 +10,12 @@ public class AgentCluster : IEnumerable<GameObject>
 {
     // Internal list to hold the GameObjects
     private List<GameObject> gameObjects = new List<GameObject>();
+    public float boundingBoxPadding = 5f;
+
+    public AgentCluster() { 
+        GameStateController gameStateController = GameObject.FindWithTag(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
+        boundingBoxPadding = gameStateController.AgentNavmeshSize;
+    }
 
     // Implicit conversion from List<GameObject> to GameObjectListWrapper
     public static implicit operator AgentCluster(List<GameObject> objects)
@@ -17,6 +23,7 @@ public class AgentCluster : IEnumerable<GameObject>
         // Create a new instance of the wrapper and set the internal list
         var wrapper = new AgentCluster();
         wrapper.SetList(objects);
+        
         return wrapper;
     }
 
@@ -66,17 +73,16 @@ public class AgentCluster : IEnumerable<GameObject>
     public BoundingBoxXZ GetBoundingBoxXZ()
     {
         BoundingBoxXZ boundingBox = new BoundingBoxXZ();
-
         foreach(var agent in gameObjects) {
             boundingBox.minX = Mathf.Min(boundingBox.minX, agent.transform.position.x);
             boundingBox.maxX = Mathf.Max(boundingBox.maxX, agent.transform.position.x);
             boundingBox.minZ = Mathf.Min(boundingBox.minZ, agent.transform.position.z);
             boundingBox.maxZ = Mathf.Max(boundingBox.maxZ, agent.transform.position.z);
         }
-        boundingBox.minX -= World.BOUNDING_BOX_PADDING_X;
-        boundingBox.maxX += World.BOUNDING_BOX_PADDING_X;
-        boundingBox.minZ -= World.BOUNDING_BOX_PADDING_Z;
-        boundingBox.maxZ += World.BOUNDING_BOX_PADDING_Z;
+        boundingBox.minX -= boundingBoxPadding;
+        boundingBox.maxX += boundingBoxPadding;
+        boundingBox.minZ -= boundingBoxPadding;
+        boundingBox.maxZ += boundingBoxPadding;
 
         return boundingBox;
     }

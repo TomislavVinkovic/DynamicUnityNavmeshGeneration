@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/Enums/DynamicNavMeshState.cs" />
+    <Compile Include="Assets/Scripts/GameStateController.cs" />
     <Compile Include="Assets/Scripts/Math/LinearAlgebra.cs" />
     <Compile Include="Assets/Scripts/DynamicNavMeshController.cs" />
     <Compile Include="Assets/Scripts/Mesh/NavMeshBuilder.cs" />
@@ -73,12 +74,11 @@
     <Compile Include="Assets/Scripts/LevelGenerator.cs" />
     <Compile Include="Assets/Scripts/AgentManager.cs" />
     <Compile Include="Assets/Scripts/AgentMovement.cs" />
-    <Compile Include="Assets/GameStateController.cs" />
-    <Compile Include="Assets/WorldBuilderController.cs" />
-    <Compile Include="Assets/AgentGenerator.cs" />
+    <Compile Include="Assets/Scripts/WorldBuilderController.cs" />
     <Compile Include="Assets/Scripts/Math/AgentClustering.cs" />
     <Compile Include="Assets/Scripts/World/World.cs" />
     <Compile Include="Assets/Scripts/GlobalNavMeshController.cs" />
+    <Compile Include="Assets/Scripts/AgentGenerator.cs" />
     <Compile Include="Assets/Scripts/Camera/CinemachineCameraController.cs" />
     <Compile Include="Assets/Scripts/NavMeshMeshGenerator.cs" />
     <Compile Include="Assets/Scripts/Enums/WorldBuilderState.cs" />
