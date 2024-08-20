@@ -6,11 +6,8 @@ using UnityEngine;
 * This class is used to generate a level with walls and obstacles
 ***/
 public class LevelGenerator : MonoBehaviour
-{
-    public int width = 200;
-	public int height = 200;
-
-	public GameObject wall;
+{   
+    public GameObject wall;
 
     public bool IsLevelGenerated { get; private set; } = false;
 
@@ -18,10 +15,12 @@ public class LevelGenerator : MonoBehaviour
 
 	public GameObject agentGenerator;
 	AgentGenerator agentGeneratorController;
+    GameStateController gameStateController;
 	
 	void Awake()
 	{
 		agentGeneratorController = agentGenerator.GetComponent<AgentGenerator>();
+        gameStateController = GameObject.FindWithTag(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
 	}
 
 	void Start() {
@@ -41,9 +40,9 @@ public class LevelGenerator : MonoBehaviour
 	{
         float wallWidth = World.WALL_WIDTH;
 		// Loop over the grid
-		for (int x = 0; x <= width; x+=(int)wallWidth)
+		for (int x = 0; x <= gameStateController.PlaneWidth; x+=(int)wallWidth)
 		{
-			for (int z = 0; z <= height; z+=(int)wallWidth)
+			for (int z = 0; z <= gameStateController.PlaneHeight; z+=(int)wallWidth)
 			{
 				// Would the wall intersect with an agent (bounds)?
 				// If not, spawn the wall
@@ -60,7 +59,10 @@ public class LevelGenerator : MonoBehaviour
 				if (UnityEngine.Random.value > 1 - obstacleDensity && !intersectsAgent)
 				{
 					// Spawn a wall
-					Vector3 pos = new Vector3(x - width / 2f, 1.5f, z - height / 2f);
+					Vector3 pos = new Vector3(
+                        x - gameStateController.PlaneWidth / 2f, 
+                        1.5f, z - gameStateController.PlaneHeight / 2f
+                    );
 					Instantiate(wall, pos, Quaternion.identity, transform);
 				}
 			}

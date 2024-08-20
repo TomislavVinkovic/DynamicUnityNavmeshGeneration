@@ -6,12 +6,16 @@ using UnityEngine;
  ************************************************************************************/
 public class AgentGenerator : MonoBehaviour
 {
-    public int width = 200;
-	public int height = 200;
-
     public GameObject agent;
 
+    GameStateController gameStateController;
+
     public bool AreAgentsGenerated { get; private set; } = false;
+
+    void Awake()
+    {
+        gameStateController = GameObject.FindWithTag(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
+    }
 
     public void PlaceAgents(int numberOfAgents)
 	{
@@ -20,8 +24,8 @@ public class AgentGenerator : MonoBehaviour
         {
             // Spawn an agent
             Vector3 pos = new Vector3(
-                Random.Range(-width / 2f, width / 2f), 1.5f, 
-                Random.Range(-height / 2f, height / 2f)
+                Random.Range(-gameStateController.PlaneWidth / 2f, gameStateController.PlaneWidth / 2f), 1.5f, 
+                Random.Range(-gameStateController.PlaneHeight / 2f, gameStateController.PlaneHeight / 2f)
             );
             Instantiate(agent, pos, Quaternion.identity, transform);
         }
