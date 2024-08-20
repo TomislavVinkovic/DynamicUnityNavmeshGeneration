@@ -11,12 +11,16 @@ public class AgentManager : MonoBehaviour
     public Material defaultMaterial;
     public Material hoverMaterial;
 
+    public GameObject gameStateObject;
+    GameStateController gameStateController;
+
     GameObject selectedAgent;
     GameObject hoveredAgent;
     Camera mainCamera;
 
     void Awake()
     {
+        gameStateController = gameStateObject.GetComponent<GameStateController>();
         if (Instance == null)
         {
             Instance = this;
@@ -34,9 +38,11 @@ public class AgentManager : MonoBehaviour
 
     void Update()
     {
-        HandleAgentSelection();
-        HandleMovementInput();
-        HandleAgentHover();
+        if(!gameStateController.RandomMovementEnabled) {
+            HandleAgentSelection();
+            HandleMovementInput();
+            HandleAgentHover();
+        }
     }
 
     void HandleAgentSelection()

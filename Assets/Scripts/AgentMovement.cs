@@ -10,6 +10,8 @@ public class AgentMovement : MonoBehaviour
     private NavMeshAgent navMeshAgent;
     private Vector3? originalDestination;
 
+    GameStateController gameStateController;
+
     public void MoveToPosition(Vector3 position)
     {
         if (navMeshAgent != null)
@@ -52,25 +54,68 @@ public class AgentMovement : MonoBehaviour
         return position;
     }
 
+    void Awake()
+    {
+        gameStateController = GameObject.Find(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
+    }
+
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
+    Vector3 NewRandomPosition() {
+        return new Vector3(
+            Random.Range(
+                -gameStateController.PlaneWidth/2 + World.AGENT_WIDTH, 
+                gameStateController.PlaneWidth/2 - World.AGENT_WIDTH
+            ), 
+            1f, 
+            Random.Range(
+                -gameStateController.PlaneHeight/2 + World.AGENT_WIDTH, 
+                gameStateController.PlaneHeight/2 - World.AGENT_WIDTH
+            )
+        );
+    }
+
     void Update()
     {
-        if (
-            navMeshAgent != null
-            && navMeshAgent.enabled
-            && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance
-            && originalDestination != null
-        )
-        {
-            if(navMeshAgent.destination != originalDestination) {
-                TryMoveToPosition((Vector3)originalDestination);
+        if(gameStateController.RandomMovementEnabled) {
+            if(
+                originalDestination == null 
+                && navMeshAgent != null
+                && navMeshAgent.enabled
+            ) {
+                var newRandom = NewRandomPosition();
+                Debug.Log("Moving to first position: " + newRandom);
+                MoveToPosition (newRandom);
             }
-            else {
-                originalDestination = null;
+            else if(navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance) {
+                if(navMeshAgent.destination != originalDestination) {
+                    TryMoveToPosition((Vector3)originalDestination);
+                }
+                else {
+                    var newRandom = NewRandomPosition();
+                    Debug.Log("Moving to another position: " + newRandom);
+                    MoveToPosition (newRandom);
+                }
+            }
+
+        }
+            
+        else {
+            if (
+                navMeshAgent != null
+                && navMeshAgent.enabled
+                && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance
+                && originalDestination != null
+            ) {
+                if(navMeshAgent.destination != originalDestination) {
+                    TryMoveToPosition((Vector3)originalDestination);
+                }
+                else {
+                    originalDestination = null;
+                }
             }
         }
     }

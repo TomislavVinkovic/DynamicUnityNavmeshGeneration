@@ -20,7 +20,7 @@ public class GameStateController : MonoBehaviour
 
     public Button BuildButton;
     public Button ResetButton;
-    public Button RandomMovementButton;
+    public Toggle RandomMovementToggle;
     public GameObject worldBuilder;
     WorldBuilderController worldBuilderController;
 
@@ -28,8 +28,10 @@ public class GameStateController : MonoBehaviour
     public int NumberOfAgents { get; private set; }
     public float ObstacleDensity { get; private set; }
     public float AgentNavmeshSize { get; private set; }
+    public int PlaneWidth {get; private set;} = 150;
+    public int PlaneHeight {get; private set;} = 150;
 
-    public bool RandomMovementEnabled { get; private set; }
+    public bool RandomMovementEnabled { get; private set; } = true;
 
     void Awake() {
         // Get the WorldBuilderController component from the worldBuilder GameObject
@@ -50,13 +52,13 @@ public class GameStateController : MonoBehaviour
         // Add listeners to the buttons for their click events
         BuildButton.onClick.AddListener(HandleBuildButtonPressed);
         ResetButton.onClick.AddListener(HandleResetButtonPressed);
-        RandomMovementButton.onClick.AddListener(HandleRandomMovementButtonPressed);
+        RandomMovementToggle.onValueChanged.AddListener(delegate { HandleRandomMovementToggle(); });
     }
 
     void Update() {
         UpdateSlidersInteractable();
         UpdateBuildButtonInteractable();
-        UpdateRandomMovementButtonInteractable();
+        UpdateRandomMovementToggleInteractable();
         ExitGameIfEscapePressed();        
     }
 
@@ -87,14 +89,9 @@ public class GameStateController : MonoBehaviour
         worldBuilderController.Reset();
     }
 
-    void HandleRandomMovementButtonPressed() {
-        if(RandomMovementEnabled) {
-            RandomMovementEnabled = false;
-            RandomMovementButton.GetComponentInChildren<TextMeshProUGUI>().text = "Start Random Movement";
-        } else {
-            RandomMovementEnabled = true;
-            RandomMovementButton.GetComponentInChildren<TextMeshProUGUI>().text = "End Random Movement";
-        }
+    void HandleRandomMovementToggle() {
+        Debug.Log(RandomMovementToggle.isOn);
+        RandomMovementEnabled = RandomMovementToggle.isOn;
     }
 
     void UpdateSlidersInteractable() {
@@ -107,8 +104,8 @@ public class GameStateController : MonoBehaviour
         BuildButton.interactable = worldBuilderController.State.Equals(WorldBuilderState.Standby);
     }
 
-    void UpdateRandomMovementButtonInteractable() {
-        RandomMovementButton.interactable = worldBuilderController.State.Equals(WorldBuilderState.Ready);
+    void UpdateRandomMovementToggleInteractable() {
+        RandomMovementToggle.interactable = worldBuilderController.State.Equals(WorldBuilderState.Standby);
     }
 
     void ExitGameIfEscapePressed() {

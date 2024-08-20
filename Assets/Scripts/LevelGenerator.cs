@@ -57,7 +57,7 @@ public class LevelGenerator : MonoBehaviour
 				bool intersectsAgent = DoesWallIntersectAgent(wallBounds);
 
 
-				if (UnityEngine.Random.value > Math.Clamp(1 - obstacleDensity, 0f, 0.9f) && !intersectsAgent)
+				if (UnityEngine.Random.value > 1 - obstacleDensity && !intersectsAgent)
 				{
 					// Spawn a wall
 					Vector3 pos = new Vector3(x - width / 2f, 1.5f, z - height / 2f);
