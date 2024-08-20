@@ -78,6 +78,9 @@ public static class AgentClustering
 
 
     static List<AgentCluster> GroupAgents(AgentCluster agents, Vector3 direction) {
+
+        var gameStateController = GameObject.FindGameObjectWithTag(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
+
         List<AgentCluster> agentClusters = new List<AgentCluster>();
         AgentCluster currentCluster = new AgentCluster();
 
@@ -92,12 +95,12 @@ public static class AgentClustering
             // Check by the specified axis
             if (direction == LinearAlgebra.XAxis) {
                 float distanceX = Mathf.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x);
-                if (distanceX < World.AGENT_NAVMESH_BOUNDS_SIZE.x) {
+                if (distanceX < gameStateController.AgentNavmeshSize) {
                     isInCluster = true;
                 }
             } else if (direction == LinearAlgebra.ZAxis) {
                 float distanceZ = Mathf.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z);
-                if (distanceZ < World.AGENT_NAVMESH_BOUNDS_SIZE.z) {
+                if (distanceZ < gameStateController.AgentNavmeshSize) {
                     isInCluster = true;
                 }
             }

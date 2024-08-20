@@ -47,13 +47,12 @@ public class AgentMovement : MonoBehaviour
     {
         NavMeshHit hit;
         float maxSearchDistance = 1000f; // Set a reasonable maximum search distance
-    
+        
         if (NavMesh.SamplePosition(position, out hit, maxSearchDistance, NavMesh.AllAreas))
         {
             return hit.position;
         }
-
-        return new Vector3(position.x, 1f, position.z);
+        return position;
     }
 
     void Awake()

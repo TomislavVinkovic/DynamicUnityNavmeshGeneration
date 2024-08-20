@@ -8,8 +8,6 @@ using UnityEngine;
 
 public class World
 {   
-    public static Vector3 AGENT_NAVMESH_BOUNDS_SIZE = new Vector3(10f, 0f, 10f);
-    public static Vector3 SMALLER_BOUNDS_DIFF = new Vector3(10f, 0f, 10f);
     public static float AGENT_WIDTH = 1f;
     public static float WALL_WIDTH = 2f;
     public const string AGENT_TAG = "Agent";
