@@ -1165,7 +1165,7 @@ GameObject:
   - component: {fileID: 382785526}
   m_Layer: 0
   m_Name: AgentManager
-  m_TagString: Untagged
+  m_TagString: AgentManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2364,8 +2364,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f61c36691c9c33d96537da20b3ea82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 140
-  height: 140
   agent: {fileID: 3566670043315522439, guid: 26fbf5ec12a0bf09780d1843cff6f92e, type: 3}
 --- !u!4 &1099725266
 Transform:
@@ -2866,8 +2864,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9b16c9138789eb619ad3fed5b115bf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 140
-  height: 140
   wall: {fileID: 1694818530434503100, guid: 29bd4ec2103f55b958b2fb089304eb22, type: 3}
   agentGenerator: {fileID: 382785525}
 --- !u!4 &1769774802

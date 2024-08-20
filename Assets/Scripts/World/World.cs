@@ -15,6 +15,7 @@ public class World
     public const string AGENT_TAG = "Agent";
     public const string WALL_TAG = "Wall";
     public const string GAME_STATE_CONTROLLER_TAG = "GameStateController";
+    public const string AGENT_MANAGER_TAG = "AgentManager";
 
     public static List<GameObject> GetActiveAgents()
     {

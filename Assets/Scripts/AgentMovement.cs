@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,8 +8,9 @@ using UnityEngine.AI;
 ************************************************************************************/
 public class AgentMovement : MonoBehaviour
 {
-    private NavMeshAgent navMeshAgent;
-    private Vector3? originalDestination;
+    NavMeshAgent navMeshAgent;
+    Vector3? originalDestination;
+    AgentManager agentManager;
 
     GameStateController gameStateController;
 
@@ -51,12 +53,13 @@ public class AgentMovement : MonoBehaviour
             return hit.position;
         }
 
-        return position;
+        return new Vector3(position.x, 1f, position.z);
     }
 
     void Awake()
     {
         gameStateController = GameObject.Find(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
+        agentManager = GameObject.Find(World.AGENT_MANAGER_TAG).GetComponent<AgentManager>();
     }
 
     void Start()
@@ -65,17 +68,8 @@ public class AgentMovement : MonoBehaviour
     }
 
     Vector3 NewRandomPosition() {
-        return new Vector3(
-            Random.Range(
-                -gameStateController.PlaneWidth/2 + World.AGENT_WIDTH, 
-                gameStateController.PlaneWidth/2 - World.AGENT_WIDTH
-            ), 
-            1f, 
-            Random.Range(
-                -gameStateController.PlaneHeight/2 + World.AGENT_WIDTH, 
-                gameStateController.PlaneHeight/2 - World.AGENT_WIDTH
-            )
-        );
+        int randomIndex = Random.Range(0, agentManager.AgentWaypoints.Count);
+        return agentManager.AgentWaypoints[randomIndex];
     }
 
     void Update()
@@ -87,17 +81,21 @@ public class AgentMovement : MonoBehaviour
                 && navMeshAgent.enabled
             ) {
                 var newRandom = NewRandomPosition();
-                Debug.Log("Moving to first position: " + newRandom);
                 MoveToPosition (newRandom);
             }
             else if(navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance) {
-                if(navMeshAgent.destination != originalDestination) {
+                
+                if(
+                    navMeshAgent.destination.x != ((Vector3)originalDestination).x
+                    || navMeshAgent.destination.z != ((Vector3)originalDestination).z
+                ) {
+
                     TryMoveToPosition((Vector3)originalDestination);
                 }
                 else {
+                    
                     var newRandom = NewRandomPosition();
-                    Debug.Log("Moving to another position: " + newRandom);
-                    MoveToPosition (newRandom);
+                    MoveToPosition(newRandom);
                 }
             }
 
@@ -110,7 +108,10 @@ public class AgentMovement : MonoBehaviour
                 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance
                 && originalDestination != null
             ) {
-                if(navMeshAgent.destination != originalDestination) {
+                if(
+                    navMeshAgent.destination.x != ((Vector3)originalDestination).x
+                    || navMeshAgent.destination.z != ((Vector3)originalDestination).z
+                ) {
                     TryMoveToPosition((Vector3)originalDestination);
                 }
                 else {

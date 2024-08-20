@@ -90,7 +90,6 @@ public class GameStateController : MonoBehaviour
     }
 
     void HandleRandomMovementToggle() {
-        Debug.Log(RandomMovementToggle.isOn);
         RandomMovementEnabled = RandomMovementToggle.isOn;
     }
 

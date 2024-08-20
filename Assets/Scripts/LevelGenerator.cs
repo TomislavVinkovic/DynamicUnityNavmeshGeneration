@@ -14,13 +14,19 @@ public class LevelGenerator : MonoBehaviour
 	List<GameObject> agents; // List of agents in the scene
 
 	public GameObject agentGenerator;
-	AgentGenerator agentGeneratorController;
     GameStateController gameStateController;
+    AgentManager agentManager;
+
+    private int WorldWidth;
+    private int WorldHeight;
 	
 	void Awake()
 	{
-		agentGeneratorController = agentGenerator.GetComponent<AgentGenerator>();
         gameStateController = GameObject.FindWithTag(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
+        agentManager = GameObject.FindWithTag(World.AGENT_MANAGER_TAG).GetComponent<AgentManager>();
+
+        WorldWidth = gameStateController.PlaneWidth - 10;
+        WorldHeight = gameStateController.PlaneHeight - 10;
 	}
 
 	void Start() {
@@ -40,9 +46,9 @@ public class LevelGenerator : MonoBehaviour
 	{
         float wallWidth = World.WALL_WIDTH;
 		// Loop over the grid
-		for (int x = 0; x <= gameStateController.PlaneWidth; x+=(int)wallWidth)
+		for (int x = 0; x <= WorldWidth; x+=(int)wallWidth)
 		{
-			for (int z = 0; z <= gameStateController.PlaneHeight; z+=(int)wallWidth)
+			for (int z = 0; z <= WorldHeight; z+=(int)wallWidth)
 			{
 				// Would the wall intersect with an agent (bounds)?
 				// If not, spawn the wall
@@ -54,14 +60,16 @@ public class LevelGenerator : MonoBehaviour
                     z+wallWidth/2
                 );
 				bool intersectsAgent = DoesWallIntersectAgent(wallBounds);
+                bool intersectsWaypoint = DoesWallIntersectWaypoint(wallBounds);
 
 
-				if (UnityEngine.Random.value > 1 - obstacleDensity && !intersectsAgent)
+				if (UnityEngine.Random.value > 1 - obstacleDensity && !intersectsAgent && !intersectsWaypoint)
 				{
 					// Spawn a wall
 					Vector3 pos = new Vector3(
-                        x - gameStateController.PlaneWidth / 2f, 
-                        1.5f, z - gameStateController.PlaneHeight / 2f
+                        x - WorldWidth / 2f, 
+                        1.5f, 
+                        z - WorldHeight / 2f
                     );
 					Instantiate(wall, pos, Quaternion.identity, transform);
 				}
@@ -79,6 +87,23 @@ public class LevelGenerator : MonoBehaviour
 		}
 		IsLevelGenerated = false;
 	}
+    
+    bool DoesWallIntersectWaypoint(BoundingBoxXZ wallBounds)
+    {
+        // Get the waypoints from the agent manager
+        List<Vector3> waypoints = agentManager.AgentWaypoints;
+
+        // Check if the wall intersects with any of the waypoints
+        foreach (Vector3 waypoint in waypoints)
+        {
+            if (wallBounds.Intersects(waypoint))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 	// possible point of failure
 	private bool DoesWallIntersectAgent(BoundingBoxXZ wallBounds)

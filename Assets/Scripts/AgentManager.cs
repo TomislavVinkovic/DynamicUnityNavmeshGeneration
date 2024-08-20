@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /************************************************************************************
@@ -6,7 +7,7 @@ using UnityEngine;
 ************************************************************************************/
 public class AgentManager : MonoBehaviour
 {
-    public static AgentManager Instance { get; private set; }
+    public List<Vector3> AgentWaypoints {get; private set;}
     public Material selectedMaterial;
     public Material defaultMaterial;
     public Material hoverMaterial;
@@ -21,14 +22,25 @@ public class AgentManager : MonoBehaviour
     void Awake()
     {
         gameStateController = gameStateObject.GetComponent<GameStateController>();
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        AgentWaypoints = new List<Vector3> {
+            new Vector3(-34.5f, 1f, 67.3f),
+            new Vector3(53.1f, 1f, -12.7f),
+            new Vector3(-58.6f, 1f, 19.4f),
+            new Vector3(42.9f, 1f, -59.3f),
+            new Vector3(-12.2f, 1f, 34.7f),
+            new Vector3(27.8f, 1f, 61.5f),
+            new Vector3(-47.6f, 1f, -27.1f),
+            new Vector3(65.3f, 1f, 3.2f),
+            new Vector3(-69.9f, 1f, -44.1f),
+            new Vector3(31.7f, 1f, 22.5f),
+            new Vector3(-23.4f, 1f, -68.7f),
+            new Vector3(12.6f, 1f, 48.9f),
+            new Vector3(-67.1f, 1f, 10.3f),
+            new Vector3(55.4f, 1f, -31.8f),
+            new Vector3(8.3f, 1f, 15.7f)
+        };
+
+
     }
 
     void Start()
