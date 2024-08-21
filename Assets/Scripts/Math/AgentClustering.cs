@@ -24,56 +24,7 @@ public static class AgentClustering
         var combinedClusters = CombineClusters(agentClustersX, agentClustersZ);
 
         // Merge nearby clusters
-        var mergedClusters = MergeOverlappingClusters(combinedClusters);
-        return mergedClusters;
-    }
-
-    static Dictionary<(int, int), AgentCluster> MergeOverlappingClusters(Dictionary<(int, int), AgentCluster> clusters) {
-        bool clustersMerged;
-        do {
-            clustersMerged = false;
-            var clustersToRemove = new HashSet<(int, int)>();
-            var mergedClusters = new Dictionary<(int, int), AgentCluster>(clusters);
-
-            foreach (var cluster1 in clusters) {
-                if (clustersToRemove.Contains(cluster1.Key)) continue;
-
-                foreach (var cluster2 in clusters) {
-                    if (cluster1.Key == cluster2.Key || clustersToRemove.Contains(cluster2.Key)) continue;
-
-                    if (ShouldMergeClusters(cluster1.Value, cluster2.Value)) {
-                        // Merge cluster2 into cluster1
-                        mergedClusters[cluster1.Key].AddRange(cluster2.Value);
-                        clustersToRemove.Add(cluster2.Key);
-                        clustersMerged = true;
-                        
-                        // Update the bounds for the merged cluster
-                        mergedClusters[cluster1.Key] = mergedClusters[cluster1.Key]; // Recalculate bounds here
-
-                        break; // Exit the inner loop to avoid modifying the collection while iterating
-                    }
-                }
-            }
-
-            // Remove merged clusters from the dictionary
-            foreach (var key in clustersToRemove) {
-                mergedClusters.Remove(key);
-            }
-
-            clusters = mergedClusters;
-
-        } while (clustersMerged);
-
-        return clusters;
-    }
-
-
-    static bool ShouldMergeClusters(AgentCluster cluster1, AgentCluster cluster2) {
-        // Logic to determine if clusters should be merged, based on proximity or overlap
-        // For example, comparing bounding boxes:
-        var bounds1 = cluster1.GetBoundingBoxXZ();
-        var bounds2 = cluster2.GetBoundingBoxXZ();
-        return bounds1.Intersects(bounds2);
+        return combinedClusters;
     }
 
 
@@ -94,13 +45,13 @@ public static class AgentClustering
 
             // Check by the specified axis
             if (direction == LinearAlgebra.XAxis) {
-                float distanceX = Mathf.Abs(agents[i].transform.position.x - currentCluster[0].transform.position.x);
-                if (distanceX < gameStateController.AgentNavmeshSize) {
+                float distanceX = Mathf.Abs(agents[i].transform.position.x - currentCluster.Last().transform.position.x);
+                if (distanceX < 2*gameStateController.AgentNavmeshSize) {
                     isInCluster = true;
                 }
             } else if (direction == LinearAlgebra.ZAxis) {
-                float distanceZ = Mathf.Abs(agents[i].transform.position.z - currentCluster[0].transform.position.z);
-                if (distanceZ < gameStateController.AgentNavmeshSize) {
+                float distanceZ = Mathf.Abs(agents[i].transform.position.z - currentCluster.Last().transform.position.z);
+                if (distanceZ < 2*gameStateController.AgentNavmeshSize) {
                     isInCluster = true;
                 }
             }
