@@ -70,8 +70,8 @@ public class GameStateController : MonoBehaviour
 
     void UpdateObstacleDensity()
     {
-        ObstacleDensity = obstacleDensitySlider.value; // Keep it as a float
-        obstacleDensityText.text = "Obstacle Density: " +  (Math.Round(ObstacleDensity, 2) * 100).ToString();
+        ObstacleDensity = obstacleDensitySlider.value / 10; // Keep it as a float
+        obstacleDensityText.text = "Obstacle Density: " +  (Math.Round(obstacleDensitySlider.value, 2) * 100).ToString();
     }
 
     void UpdateAgentNavmeshSize() {

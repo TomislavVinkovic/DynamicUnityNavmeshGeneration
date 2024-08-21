@@ -68,6 +68,7 @@ public class AgentMovement : MonoBehaviour
 
     Vector3 NewRandomPosition() {
         int randomIndex = Random.Range(0, agentManager.AgentWaypoints.Count);
+        navMeshAgent.speed = Random.Range(15f, 30f);
         return agentManager.AgentWaypoints[randomIndex];
     }
 
