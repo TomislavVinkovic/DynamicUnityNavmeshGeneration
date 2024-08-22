@@ -34,12 +34,6 @@ public class WorldBuilderController : MonoBehaviour
         }
     }
 
-    public void Reset()
-    {
-        State = WorldBuilderState.Resetting;
-        StartCoroutine(ResetWorld());
-    }
-
     IEnumerator BuildWorld(int numberOfAgents, float obstacleDensity)
     {   
         // Spawn the agents randomly in the world
@@ -55,6 +49,12 @@ public class WorldBuilderController : MonoBehaviour
 
         // Build the world
         yield return null;
+    }
+
+    public void Reset()
+    {
+        State = WorldBuilderState.Resetting;
+        StartCoroutine(ResetWorld());
     }
 
     IEnumerator ResetWorld()
