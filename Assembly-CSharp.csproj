@@ -66,20 +66,20 @@
   <ItemGroup>
     <Compile Include="Assets/Scripts/Enums/DynamicNavMeshState.cs" />
     <Compile Include="Assets/Scripts/Controllers/DynamicNavMeshController.cs" />
-    <Compile Include="Assets/Scripts/Controllers/AgentManager.cs" />
+    <Compile Include="Assets/Scripts/Controllers/AgentMovementController.cs" />
     <Compile Include="Assets/Scripts/Math/LinearAlgebra.cs" />
     <Compile Include="Assets/Scripts/Generators/AgentGenerator.cs" />
     <Compile Include="Assets/Scripts/Mesh/NavMeshBuilder.cs" />
     <Compile Include="Assets/Scripts/Math/AgentCluster.cs" />
     <Compile Include="Assets/Scripts/Math/BoundingBoxXZ.cs" />
     <Compile Include="Assets/Scripts/Controllers/WorldBuilderController.cs" />
+    <Compile Include="Assets/Scripts/Controllers/AgentManagerController.cs" />
     <Compile Include="Assets/Scripts/Generators/LevelGenerator.cs" />
     <Compile Include="Assets/Scripts/Controllers/GameStateController.cs" />
     <Compile Include="Assets/Scripts/Math/AgentClustering.cs" />
     <Compile Include="Assets/Scripts/World/World.cs" />
     <Compile Include="Assets/Scripts/Generators/NavMeshMeshGenerator.cs" />
     <Compile Include="Assets/Scripts/Controllers/GlobalNavMeshController.cs" />
-    <Compile Include="Assets/Scripts/Controllers/AgentMovement.cs" />
     <Compile Include="Assets/Scripts/Camera/CinemachineCameraController.cs" />
     <Compile Include="Assets/Scripts/Enums/WorldBuilderState.cs" />
   </ItemGroup>

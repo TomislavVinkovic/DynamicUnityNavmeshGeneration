@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2998217563789509616}
   - component: {fileID: 748598030657820314}
-  - component: {fileID: 1894398241417763295}
+  - component: {fileID: 8998519270491862935}
   m_Layer: 0
   m_Name: DynamicNavMesh
   m_TagString: Untagged
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
---- !u!114 &1894398241417763295
+--- !u!114 &8998519270491862935
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -73,7 +73,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5229882656070888587}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0cc3bbf6a9fca323385e0fd78f3b5814, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b73a3ce4da70ec75b7f7b7913a39dd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   State: 0

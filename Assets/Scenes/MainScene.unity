@@ -669,7 +669,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 242588942}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 736408f0dfd069e7f8f833684934f444, type: 3}
+  m_Script: {fileID: 11500000, guid: 2d086632f8c2e1ed1b6e6e22f144a789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   levelGenerator: {fileID: 1769774800}
@@ -1318,7 +1318,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 382785525}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 044a6931bfca6042ebe9986610e7c505, type: 3}
+  m_Script: {fileID: 11500000, guid: e3cfe73ca29fce167a2912090dffb87c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   selectedMaterial: {fileID: 2100000, guid: 5c5e36d1a3de15ae3b8513017cd517e6, type: 2}
@@ -1545,10 +1545,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 513444188}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b57a8fbb2e4771e429892d9dfb3b1eaa, type: 3}
+  m_Script: {fileID: 11500000, guid: cb8e2823c1c3cb9cb92db42f3c691d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navMeshColor: {r: 0.12813091, g: 0, b: 1, a: 0.5}
+  navMeshColor: {r: 0.52566385, g: 0, b: 1, a: 0.5}
 --- !u!4 &513444190
 Transform:
   m_ObjectHideFlags: 0
@@ -1845,7 +1845,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 735354967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07b500919b97cbba0947e5f3ba1a565c, type: 3}
+  m_Script: {fileID: 11500000, guid: bb9336029b1da2f56bf880774db34d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentSlider: {fileID: 2129212855}
@@ -2575,7 +2575,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1099725264}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16f61c36691c9c33d96537da20b3ea82, type: 3}
+  m_Script: {fileID: 11500000, guid: 87cdd5913e812a97cb765f90986fff4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 3566670043315522439, guid: 26fbf5ec12a0bf09780d1843cff6f92e, type: 3}
@@ -3344,11 +3344,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1769774800}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9b16c9138789eb619ad3fed5b115bf3, type: 3}
+  m_Script: {fileID: 11500000, guid: 27246b347ef2aba2b8366d8866786d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   wall: {fileID: 1694818530434503100, guid: 29bd4ec2103f55b958b2fb089304eb22, type: 3}
-  agentGenerator: {fileID: 382785525}
+  agentGenerator: {fileID: 1099725264}
 --- !u!4 &1769774802
 Transform:
   m_ObjectHideFlags: 0
@@ -4017,7 +4017,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2113539688}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6cf9674355bc62f9a2f724b17804dd6, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f0634a9c1dcde398a59ba0a2b013a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   navMeshBuilderObject: {fileID: 421966486}
