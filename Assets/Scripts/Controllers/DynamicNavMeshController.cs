@@ -16,6 +16,7 @@ public class DynamicNavMeshController : MonoBehaviour
     List<GameObject> agents;
     public List<GameObject> agentsInside;
     Bounds navMeshBounds;
+    Bounds smallerBounds;
 
     // PUBLIC GETTERS
     public Bounds NavMeshBounds { get => navMeshBounds; }
@@ -42,6 +43,18 @@ public class DynamicNavMeshController : MonoBehaviour
     public void SetNavMeshBounds(Bounds bounds)
     {
         navMeshBounds = bounds;
+        smallerBounds = new Bounds(
+            new Vector3(
+                bounds.center.x,
+                bounds.center.y,
+                bounds.center.z
+            ),
+            new Vector3(
+                bounds.size.x - 1f,
+                bounds.size.y,
+                bounds.size.z - 1f
+            )
+        );
     }
 
     void Update()
@@ -52,10 +65,7 @@ public class DynamicNavMeshController : MonoBehaviour
             foreach (var agent in agentsInside)
             {
                 if (
-                    !navMeshBounds.Contains(agent.transform.position + new Vector3(1f, 0, 0))
-                    || !navMeshBounds.Contains(agent.transform.position - new Vector3(1f, 0, 0))
-                    || !navMeshBounds.Contains(agent.transform.position + new Vector3(0, 0, 1f))
-                    || !navMeshBounds.Contains(agent.transform.position - new Vector3(0, 0, 1f))
+                    !smallerBounds.Contains(agent.transform.position)
                 )
                 {
                     // Mark for update

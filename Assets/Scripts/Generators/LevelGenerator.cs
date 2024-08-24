@@ -15,7 +15,7 @@ public class LevelGenerator : MonoBehaviour
 
 	public GameObject agentGenerator;
     GameStateController gameStateController;
-    AgentManager agentManager;
+    AgentManagerController agentManager;
 
     private int WorldWidth;
     private int WorldHeight;
@@ -23,14 +23,17 @@ public class LevelGenerator : MonoBehaviour
 	void Awake()
 	{
         gameStateController = GameObject.FindWithTag(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
-        agentManager = GameObject.FindWithTag(World.AGENT_MANAGER_TAG).GetComponent<AgentManager>();
+        agentManager = GameObject.FindWithTag(World.AGENT_MANAGER_TAG).GetComponent<AgentManagerController>();
 
         WorldWidth = gameStateController.PlaneWidth - 10;
         WorldHeight = gameStateController.PlaneHeight - 10;
 	}
 
-	void Start() {
-		agents = new List<GameObject>(GameObject.FindGameObjectsWithTag("Agent"));
+	// Create a grid based level
+	public void GenerateLevel(float obstacleDensity)
+	{
+
+        agents = World.GetActiveAgents();
 
         // Sort agents by their x and z positions
         agents.Sort((a, b) =>
@@ -39,32 +42,29 @@ public class LevelGenerator : MonoBehaviour
             int compareX = a.transform.position.x.CompareTo(b.transform.position.x);
             return compareX != 0 ? compareX : a.transform.position.z.CompareTo(b.transform.position.z);
         });
-	}
 
-	// Create a grid based level
-	public void GenerateLevel(float obstacleDensity)
-	{
         float wallWidth = World.WALL_WIDTH;
 		// Loop over the grid
 		for (int x = 0; x <= WorldWidth; x+=(int)wallWidth)
 		{
 			for (int z = 0; z <= WorldHeight; z+=(int)wallWidth)
 			{
-				// Would the wall intersect with an agent (bounds)?
-				// If not, spawn the wall
-                
-				BoundingBoxXZ wallBounds = new BoundingBoxXZ(
-                    x-wallWidth/2, 
-                    x+wallWidth/2, 
-                    z-wallWidth/2, 
-                    z+wallWidth/2
-                );
-				bool intersectsAgent = DoesWallIntersectAgent(wallBounds);
-                bool intersectsWaypoint = DoesWallIntersectWaypoint(wallBounds);
-
-
-				if (UnityEngine.Random.value > 1 - obstacleDensity && !intersectsAgent && !intersectsWaypoint)
+				
+				if (UnityEngine.Random.value > 1 - obstacleDensity)
 				{
+                    BoundingBoxXZ wallBounds = new BoundingBoxXZ(
+                        x-wallWidth/2, 
+                        x+wallWidth/2, 
+                        z-wallWidth/2, 
+                        z+wallWidth/2
+                    );
+                    bool intersectsWaypoint = DoesWallIntersectWaypoint(wallBounds);
+                    if(intersectsWaypoint) continue;
+                    
+                    bool intersectsAgent = DoesWallIntersectAgent(wallBounds);
+                    if(intersectsAgent) continue;
+
+
 					// Spawn a wall
 					Vector3 pos = new Vector3(
                         x - WorldWidth / 2f, 

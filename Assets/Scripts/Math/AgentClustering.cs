@@ -35,6 +35,7 @@ public static class AgentClustering
         List<AgentCluster> agentClusters = new List<AgentCluster>();
         AgentCluster currentCluster = new AgentCluster();
 
+        float d = 2*gameStateController.AgentNavmeshSize;
         for (int i = 0; i < agents.Count; i++) {
             if (i == 0) {
                 currentCluster.Add(agents[i]);
@@ -46,12 +47,12 @@ public static class AgentClustering
             // Check by the specified axis
             if (direction == LinearAlgebra.XAxis) {
                 float distanceX = Mathf.Abs(agents[i].transform.position.x - currentCluster.Last().transform.position.x);
-                if (distanceX < 2*gameStateController.AgentNavmeshSize) {
+                if (distanceX < d) {
                     isInCluster = true;
                 }
             } else if (direction == LinearAlgebra.ZAxis) {
                 float distanceZ = Mathf.Abs(agents[i].transform.position.z - currentCluster.Last().transform.position.z);
-                if (distanceZ < 2*gameStateController.AgentNavmeshSize) {
+                if (distanceZ < d) {
                     isInCluster = true;
                 }
             }

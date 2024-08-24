@@ -28,26 +28,19 @@ public class WorldBuilderController : MonoBehaviour
         if(State == WorldBuilderState.Standby)
         {
             State = WorldBuilderState.Building;
-            
-            // Build the world using a coroutine
             StartCoroutine(BuildWorld(numberOfAgents, obstacleDensity));
         }
     }
 
     IEnumerator BuildWorld(int numberOfAgents, float obstacleDensity)
     {   
-        // Spawn the agents randomly in the world
         agentGeneratorController.PlaceAgents(numberOfAgents);
-
-        // Generate the level
         levelGeneratorController.GenerateLevel(obstacleDensity);
 
-        // Set the state to Ready
         State = WorldBuilderState.Ready;
 
         globalNavMeshController.MarkForUpdate();
 
-        // Build the world
         yield return null;
     }
 

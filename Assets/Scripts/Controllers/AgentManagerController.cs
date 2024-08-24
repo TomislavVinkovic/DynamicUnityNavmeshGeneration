@@ -5,7 +5,7 @@ using UnityEngine;
  * This class is used to manage the agents in the scene
  * It is used to select, move and hover over agents
 ************************************************************************************/
-public class AgentManager : MonoBehaviour
+public class AgentManagerController : MonoBehaviour
 {
     public List<Vector3> AgentWaypoints {get; private set;}
     public Material selectedMaterial;
@@ -92,7 +92,7 @@ public class AgentManager : MonoBehaviour
             {
                 if (hit.collider != null && hit.collider.CompareTag("Ground"))
                 {
-                    AgentMovement agentMovement = selectedAgent.GetComponent<AgentMovement>();
+                    AgentMovementController agentMovement = selectedAgent.GetComponent<AgentMovementController>();
                     agentMovement.MoveToPosition(hit.point);
                 }
             }

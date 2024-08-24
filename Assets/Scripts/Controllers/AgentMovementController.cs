@@ -6,13 +6,15 @@ using UnityEngine.AI;
  * This class is used to control the movement of an agent
  * It is used to move the agent to a specific position
 ************************************************************************************/
-public class AgentMovement : MonoBehaviour
+public class AgentMovementController : MonoBehaviour
 {
     NavMeshAgent navMeshAgent;
     Vector3? originalDestination;
-    AgentManager agentManager;
+    AgentManagerController agentManager;
 
     GameStateController gameStateController;
+
+    const float MAX_SEARCH_DISTANCE = 1000f;
 
     public void MoveToPosition(Vector3 position)
     {
@@ -46,9 +48,8 @@ public class AgentMovement : MonoBehaviour
     private Vector3 FindNearestNavMeshPoint(Vector3 position)
     {
         NavMeshHit hit;
-        float maxSearchDistance = 1000f; // Set a reasonable maximum search distance
         
-        if (NavMesh.SamplePosition(position, out hit, maxSearchDistance, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(position, out hit, MAX_SEARCH_DISTANCE, NavMesh.AllAreas))
         {
             return hit.position;
         }
@@ -58,7 +59,7 @@ public class AgentMovement : MonoBehaviour
     void Awake()
     {
         gameStateController = GameObject.Find(World.GAME_STATE_CONTROLLER_TAG).GetComponent<GameStateController>();
-        agentManager = GameObject.Find(World.AGENT_MANAGER_TAG).GetComponent<AgentManager>();
+        agentManager = GameObject.Find(World.AGENT_MANAGER_TAG).GetComponent<AgentManagerController>();
     }
 
     void Start()
@@ -84,7 +85,6 @@ public class AgentMovement : MonoBehaviour
                 MoveToPosition (newRandom);
             }
             else if(navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance) {
-                
                 if(
                     navMeshAgent.destination.x != ((Vector3)originalDestination).x
                     || navMeshAgent.destination.z != ((Vector3)originalDestination).z
